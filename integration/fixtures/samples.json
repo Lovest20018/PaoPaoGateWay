@@ -1,0 +1,1135 @@
+[
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "boot_id": "00000000-0000-4000-8000-000000000002",
+        "build_commit": "unknown",
+        "config_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "core_version": "test-core",
+        "edition": "debian",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "kind": "paopaogateway",
+        "name": "PaoPaoGateway",
+        "source_sha256": null,
+        "version": "development"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1700000000.0
+    },
+    "method": "GET",
+    "name": "instance",
+    "path": "/api/v1/instance",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "access_role": "observer",
+        "address_families": {
+          "observation": [
+            "ipv4",
+            "ipv6"
+          ],
+          "probe": [
+            "auto"
+          ]
+        },
+        "api_version": "1",
+        "config_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "feature_states": {
+          "connection_history": "unsupported",
+          "decisions": "unsupported",
+          "fakeip_lookup": "unsupported",
+          "probe_address_pinning": "unsupported",
+          "probe_forced_ipv6": "unsupported",
+          "probe_selected_outbound": "unsupported",
+          "probe_stage_timings": "unsupported",
+          "probe_udp_quic": "unsupported"
+        },
+        "features": {
+          "configuration_write": false,
+          "connection_history": false,
+          "connections": true,
+          "decision_history": false,
+          "diagnostics_probe": true,
+          "fakeip_lookup": false,
+          "metrics": true,
+          "mihomo_connection_snapshots": false,
+          "persistent_history": true,
+          "runtime": true
+        },
+        "follows_redirects": false,
+        "freshness": {
+          "age_seconds": 0,
+          "max_age_seconds": 25,
+          "stale": false
+        },
+        "instance_id": "00000000-0000-4000-8000-000000000001",
+        "limits": {
+          "connections": 200,
+          "history_capacity": 1024,
+          "history_retention_seconds": 300,
+          "probe_concurrency": 2,
+          "probe_timeout_ms": 10000
+        },
+        "mode": "free",
+        "permissions": {
+          "configure": false,
+          "diagnose": true,
+          "maintain": false,
+          "observe": true
+        },
+        "probe_method": "HEAD",
+        "probe_policy": "exact_url_allowlist",
+        "probe_source": "gateway_local_proxy",
+        "probe_urls": [
+          "https://example.com/health"
+        ],
+        "protocols": [
+          "http",
+          "https"
+        ],
+        "status": "available",
+        "supported_modes": [
+          "free",
+          "socks5",
+          "yaml",
+          "suburl",
+          "ovpn"
+        ]
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1700000000.0
+    },
+    "method": "GET",
+    "name": "capabilities",
+    "path": "/api/v1/capabilities",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "boot_id": "00000000-0000-4000-8000-000000000002",
+        "build_commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "config_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "configuration": {
+          "configuration_state": "loaded",
+          "last_load_result": "success",
+          "loaded_at": 1700000000,
+          "reload_policy": "restart",
+          "revision_scope": "sniffbox_config"
+        },
+        "connections": {},
+        "core_responding": true,
+        "core_version": "test-core",
+        "evidence_schema": 0,
+        "fakeip": {
+          "cidr": "7.0.0.0/8",
+          "mapped": 0
+        },
+        "features": {},
+        "forwarding_verified": false,
+        "freshness": {
+          "age_seconds": 0,
+          "max_age_seconds": 25,
+          "stale": false
+        },
+        "last_probe": null,
+        "memory": {},
+        "mode": "free",
+        "outbound": {
+          "component_state": "not_required",
+          "mode": "free",
+          "reachability": "unknown",
+          "selected_id": "direct"
+        },
+        "outbound_reachable": "unknown",
+        "source": "sniffbox",
+        "source_sampled_at": 1700000000.0,
+        "status": "available",
+        "traffic": {
+          "downloadTotal": 0,
+          "uploadTotal": 12
+        },
+        "trusted_dns": {
+          "ip": "192.0.2.53",
+          "port": 5304
+        },
+        "uptime_seconds": null,
+        "version": "test-core"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1700000000.0
+    },
+    "method": "GET",
+    "name": "runtime",
+    "path": "/api/v1/runtime",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "boot_id": "00000000-0000-4000-8000-000000000002",
+        "config_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "core_responding": true,
+        "forwarding_verified": false,
+        "freshness": {
+          "age_seconds": 0,
+          "max_age_seconds": 25,
+          "stale": false
+        },
+        "outbound_reachable": "unknown",
+        "source_sampled_at": 1700000000.0,
+        "status": "available"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1700000000.0
+    },
+    "method": "GET",
+    "name": "health",
+    "path": "/api/v1/health",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "freshness": {
+          "age_seconds": 0,
+          "max_age_seconds": 25,
+          "stale": false
+        },
+        "metrics": [
+          {
+            "available": true,
+            "boot_id": "00000000-0000-4000-8000-000000000002",
+            "kind": "counter",
+            "name": "download_total",
+            "reset": "core_restart",
+            "sampled_at": 1700000000.0,
+            "unit": "bytes",
+            "value": 0
+          },
+          {
+            "available": true,
+            "boot_id": "00000000-0000-4000-8000-000000000002",
+            "kind": "counter",
+            "name": "upload_total",
+            "reset": "core_restart",
+            "sampled_at": 1700000000.0,
+            "unit": "bytes",
+            "value": 12
+          },
+          {
+            "available": false,
+            "boot_id": "00000000-0000-4000-8000-000000000002",
+            "kind": "gauge",
+            "name": "active_connections",
+            "reset": null,
+            "sampled_at": 1700000000.0,
+            "unit": "connections",
+            "value": null
+          },
+          {
+            "available": false,
+            "boot_id": "00000000-0000-4000-8000-000000000002",
+            "kind": "gauge",
+            "name": "memory_total",
+            "reset": null,
+            "sampled_at": 1700000000.0,
+            "unit": "bytes",
+            "value": null
+          },
+          {
+            "available": false,
+            "boot_id": "00000000-0000-4000-8000-000000000002",
+            "kind": "gauge",
+            "name": "memory_available",
+            "reset": null,
+            "sampled_at": 1700000000.0,
+            "unit": "bytes",
+            "value": null
+          },
+          {
+            "available": false,
+            "boot_id": "00000000-0000-4000-8000-000000000002",
+            "kind": "gauge",
+            "name": "core_memory_used",
+            "reset": null,
+            "sampled_at": 1700000000.0,
+            "unit": "bytes",
+            "value": null
+          }
+        ],
+        "source": "sniffbox",
+        "source_sampled_at": 1700000000.0
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1700000000.0
+    },
+    "method": "GET",
+    "name": "metrics",
+    "path": "/api/v1/metrics",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "complete_history": false,
+        "freshness_known": false,
+        "items": [],
+        "limitations": [
+          "Upstream may cache connections; source age is unavailable.",
+          "Empty rule/chains mean unknown; absence does not prove no traffic."
+        ],
+        "next_offset": null,
+        "offset": 0,
+        "pagination": "best_effort_live_offset",
+        "source": "sniffbox_connection_snapshot",
+        "source_age_seconds": null,
+        "source_sampled_at": null,
+        "status": "no_records",
+        "total": 0,
+        "truncated": false
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": null
+    },
+    "method": "GET",
+    "name": "connections",
+    "path": "/api/v1/connections",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "boot_id": "00000000-0000-4000-8000-000000000002",
+        "client_path_verified": false,
+        "config_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "configuration_changed": false,
+        "connected_address": null,
+        "connection_id": null,
+        "correlation_id": "fixture-run",
+        "dns": {
+          "addresses": null,
+          "complete_answers": false,
+          "server": null,
+          "source": "unknown",
+          "status": "unknown"
+        },
+        "failure_stage": null,
+        "follow_redirects": false,
+        "limitations": [
+          "This probes the gateway outbound, not an end device's path.",
+          "Complete DNS answers and remote proxy node/target addresses may be unavailable."
+        ],
+        "method": "HEAD",
+        "outbound_id": null,
+        "probe_id": "00000000-0000-4000-8000-000000000002",
+        "probe_source": "gateway_local_proxy",
+        "result": {
+          "ms": 20,
+          "ok": true,
+          "status": 204
+        },
+        "stages": {
+          "http": "completed",
+          "tcp": "unknown",
+          "tls": "unknown"
+        },
+        "status": "passed",
+        "timed_out": false,
+        "timings_ms": {},
+        "url": "https://example.com/health"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1700000000.0
+    },
+    "method": "POST",
+    "name": "probe_passed",
+    "path": "/api/v1/diagnostics/probe",
+    "request": {
+      "correlation_id": "fixture-run",
+      "url": "https://example.com/health"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "boot_id": "00000000-0000-4000-8000-000000000002",
+        "client_path_verified": false,
+        "config_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "configuration_changed": false,
+        "connected_address": null,
+        "connection_id": null,
+        "correlation_id": null,
+        "dns": {
+          "addresses": null,
+          "complete_answers": false,
+          "server": null,
+          "source": "unknown",
+          "status": "unknown"
+        },
+        "failure_stage": "unknown",
+        "follow_redirects": false,
+        "limitations": [
+          "This probes the gateway outbound, not an end device's path.",
+          "Complete DNS answers and remote proxy node/target addresses may be unavailable."
+        ],
+        "method": "HEAD",
+        "outbound_id": null,
+        "probe_id": "00000000-0000-4000-8000-000000000002",
+        "probe_source": "gateway_local_proxy",
+        "result": {
+          "ok": false
+        },
+        "stages": {
+          "http": "unknown",
+          "tcp": "unknown",
+          "tls": "unknown"
+        },
+        "status": "failed",
+        "timed_out": false,
+        "timings_ms": {},
+        "url": "https://example.com/health"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1700000000.0
+    },
+    "method": "POST",
+    "name": "probe_failed",
+    "path": "/api/v1/diagnostics/probe",
+    "request": {
+      "url": "https://example.com/health"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "error": {
+        "code": "TARGET_NOT_ALLOWED"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": null
+    },
+    "method": "POST",
+    "name": "forbidden_target",
+    "path": "/api/v1/diagnostics/probe",
+    "request": {
+      "url": "https://unapproved.example/"
+    },
+    "status": 403
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "error": {
+        "code": "UNSUPPORTED"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": null
+    },
+    "method": "POST",
+    "name": "ipv6_unsupported",
+    "path": "/api/v1/diagnostics/probe",
+    "request": {
+      "address_family": "ipv6",
+      "url": "https://example.com/health"
+    },
+    "status": 501
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "error": {
+        "code": "UNAUTHORIZED"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": null
+    },
+    "method": "GET",
+    "name": "auth_failure",
+    "path": "/api/v1/runtime",
+    "request": null,
+    "status": 401
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "boot_id": "00000000-0000-4000-8000-000000000002",
+        "build_commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "config_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "configuration": {
+          "configuration_state": "loaded",
+          "last_load_result": "success",
+          "loaded_at": 1700000000,
+          "reload_policy": "restart",
+          "revision_scope": "sniffbox_config"
+        },
+        "connections": {},
+        "core_responding": true,
+        "core_version": "test-core",
+        "evidence_schema": 0,
+        "fakeip": {
+          "cidr": "7.0.0.0/8",
+          "mapped": 0
+        },
+        "features": {},
+        "forwarding_verified": false,
+        "freshness": {
+          "age_seconds": 100.0,
+          "max_age_seconds": 25,
+          "stale": true
+        },
+        "last_probe": {
+          "age_seconds": 0,
+          "boot_id": "00000000-0000-4000-8000-000000000002",
+          "config_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "probe_id": "00000000-0000-4000-8000-000000000002",
+          "sampled_at": 1700000000.0,
+          "stale": false,
+          "status": "failed"
+        },
+        "memory": {},
+        "mode": "free",
+        "outbound": {
+          "component_state": "not_required",
+          "mode": "free",
+          "reachability": "unknown",
+          "selected_id": "direct"
+        },
+        "outbound_reachable": "unknown",
+        "source": "sniffbox",
+        "source_sampled_at": 1699999900.0,
+        "status": "stale",
+        "traffic": {
+          "downloadTotal": 0,
+          "uploadTotal": 12
+        },
+        "trusted_dns": {
+          "ip": "192.0.2.53",
+          "port": 5304
+        },
+        "uptime_seconds": null,
+        "version": "test-core"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1699999900.0
+    },
+    "method": "GET",
+    "name": "stale",
+    "path": "/api/v1/runtime",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "access_role": "observer",
+        "address_families": {
+          "observation": [
+            "ipv4",
+            "ipv6"
+          ],
+          "probe": [
+            "auto"
+          ]
+        },
+        "api_version": "1",
+        "config_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "feature_states": {
+          "connection_history": "tcp_after_sniff",
+          "decisions": "mode_dispatch_only",
+          "fakeip_lookup": "available",
+          "probe_address_pinning": "unsupported",
+          "probe_forced_ipv6": "unsupported",
+          "probe_selected_outbound": "unsupported",
+          "probe_stage_timings": "unsupported",
+          "probe_udp_quic": "unsupported"
+        },
+        "features": {
+          "configuration_write": false,
+          "connection_history": true,
+          "connections": true,
+          "decision_history": true,
+          "diagnostics_probe": true,
+          "fakeip_lookup": true,
+          "metrics": true,
+          "mihomo_connection_snapshots": false,
+          "persistent_history": true,
+          "runtime": true
+        },
+        "follows_redirects": false,
+        "freshness": {
+          "age_seconds": 0,
+          "max_age_seconds": 25,
+          "stale": false
+        },
+        "instance_id": "00000000-0000-4000-8000-000000000001",
+        "limits": {
+          "connections": 200,
+          "history_capacity": 1024,
+          "history_retention_seconds": 300,
+          "probe_concurrency": 2,
+          "probe_timeout_ms": 10000
+        },
+        "mode": "free",
+        "permissions": {
+          "configure": false,
+          "diagnose": true,
+          "maintain": false,
+          "observe": true
+        },
+        "probe_method": "HEAD",
+        "probe_policy": "exact_url_allowlist",
+        "probe_source": "gateway_local_proxy",
+        "probe_urls": [
+          "https://example.com/health"
+        ],
+        "protocols": [
+          "http",
+          "https"
+        ],
+        "status": "available",
+        "supported_modes": [
+          "free",
+          "socks5",
+          "yaml",
+          "suburl",
+          "ovpn"
+        ]
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1700000000.0
+    },
+    "method": "GET",
+    "name": "capabilities_evidence",
+    "path": "/api/v1/capabilities",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "algorithm_prediction": false,
+        "boot_id": "00000000-0000-4000-8000-000000000002",
+        "cidr": "7.0.0.0/8",
+        "dns_ttl_seconds": 3,
+        "domain": "example.com",
+        "fakeip": "7.1.2.3",
+        "freshness": {
+          "age_seconds": 0,
+          "max_age_seconds": 25,
+          "stale": false
+        },
+        "historical_ownership_verified": false,
+        "source": "actual_fakeip_cache",
+        "source_sampled_at": 1700000000.0,
+        "status": "matched",
+        "valid_until": null,
+        "validity": "until_evicted_or_core_restart"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1700000000.0
+    },
+    "method": "GET",
+    "name": "fakeip_matched",
+    "path": "/api/v1/fakeip/lookup?domain=example.com",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "boot_id": "00000000-0000-4000-8000-000000000002",
+        "capacity": 1024,
+        "complete_history": false,
+        "discarded_records": 0,
+        "freshness": {
+          "age_seconds": 0,
+          "max_age_seconds": 25,
+          "stale": false
+        },
+        "gap": false,
+        "items": [
+          {
+            "actual_target_address": "93.184.215.14",
+            "decision": {
+              "application_result": "unknown",
+              "config_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "connect_result": "connected",
+              "decided_at": 1700000000.0,
+              "fallback": false,
+              "outbound_id": "direct",
+              "reason": "free_mode_no_rule",
+              "rule_id": "mode:free",
+              "rule_kind": "mode_dispatch",
+              "source": "sniffbox_outbound_dispatch",
+              "status": "observed"
+            },
+            "destination_port": 443,
+            "domain": "example.com",
+            "download": 100,
+            "ended_at": 1700000001.0,
+            "id": "1",
+            "inbound": "tproxy",
+            "last_observed_at": 1700000001.0,
+            "original_destination": "7.1.2.3",
+            "resolution": {},
+            "sequence": 1,
+            "source_address": "192.0.2.1",
+            "source_port": 1234,
+            "started_at": 1700000000.0,
+            "state": "closed",
+            "transport": "tcp",
+            "upload": 10
+          }
+        ],
+        "latest_sequence": 1,
+        "next_cursor": "00000000-0000-4000-8000-000000000002:1:dd56ffc7dd7fb086d63bf60d",
+        "next_sequence": 1,
+        "oldest_sequence": 1,
+        "retention_seconds": 300,
+        "scope": "tcp_after_sniff",
+        "source_sampled_at": 1700000000.0,
+        "status": "available",
+        "total": 1,
+        "truncated": false,
+        "view": "recent"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1700000000.0
+    },
+    "method": "GET",
+    "name": "recent_connection",
+    "path": "/api/v1/connections?view=recent",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "boot_id": "00000000-0000-4000-8000-000000000002",
+        "capacity": 1024,
+        "complete_history": false,
+        "discarded_records": 0,
+        "freshness": {
+          "age_seconds": 0,
+          "max_age_seconds": 25,
+          "stale": false
+        },
+        "gap": false,
+        "items": [
+          {
+            "actual_target_address": "93.184.215.14",
+            "decision": {
+              "application_result": "unknown",
+              "config_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "connect_result": "connected",
+              "decided_at": 1700000000.0,
+              "fallback": false,
+              "outbound_id": "direct",
+              "reason": "free_mode_no_rule",
+              "rule_id": "mode:free",
+              "rule_kind": "mode_dispatch",
+              "source": "sniffbox_outbound_dispatch",
+              "status": "observed"
+            },
+            "destination_port": 443,
+            "domain": "example.com",
+            "download": 100,
+            "ended_at": 1700000001.0,
+            "id": "1",
+            "inbound": "tproxy",
+            "last_observed_at": 1700000001.0,
+            "original_destination": "7.1.2.3",
+            "resolution": {},
+            "sequence": 1,
+            "source_address": "192.0.2.1",
+            "source_port": 1234,
+            "started_at": 1700000000.0,
+            "state": "closed",
+            "transport": "tcp",
+            "upload": 10
+          }
+        ],
+        "latest_sequence": 1,
+        "next_cursor": "00000000-0000-4000-8000-000000000002:1:f2eda9d1cfea129e51ea078f",
+        "next_sequence": 1,
+        "oldest_sequence": 1,
+        "retention_seconds": 300,
+        "scope": "tcp_after_sniff",
+        "source_sampled_at": 1700000000.0,
+        "status": "available",
+        "total": 1,
+        "truncated": false,
+        "view": "recent"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1700000000.0
+    },
+    "method": "GET",
+    "name": "decision",
+    "path": "/api/v1/decisions",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "boot_id": "00000000-0000-4000-8000-000000000002",
+        "capacity": 1024,
+        "complete_history": false,
+        "discarded_records": 4,
+        "freshness": {
+          "age_seconds": 0,
+          "max_age_seconds": 25,
+          "stale": false
+        },
+        "gap": true,
+        "items": [
+          {
+            "actual_target_address": "93.184.215.14",
+            "decision": {
+              "application_result": "unknown",
+              "config_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "connect_result": "connected",
+              "decided_at": 1700000000.0,
+              "fallback": false,
+              "outbound_id": "direct",
+              "reason": "free_mode_no_rule",
+              "rule_id": "mode:free",
+              "rule_kind": "mode_dispatch",
+              "source": "sniffbox_outbound_dispatch",
+              "status": "observed"
+            },
+            "destination_port": 443,
+            "domain": "example.com",
+            "download": 100,
+            "ended_at": 1700000001.0,
+            "id": "1",
+            "inbound": "tproxy",
+            "last_observed_at": 1700000001.0,
+            "original_destination": "7.1.2.3",
+            "resolution": {},
+            "sequence": 1,
+            "source_address": "192.0.2.1",
+            "source_port": 1234,
+            "started_at": 1700000000.0,
+            "state": "closed",
+            "transport": "tcp",
+            "upload": 10
+          }
+        ],
+        "latest_sequence": 1,
+        "next_cursor": "00000000-0000-4000-8000-000000000002:1:f2eda9d1cfea129e51ea078f",
+        "next_sequence": 1,
+        "oldest_sequence": 1,
+        "retention_seconds": 300,
+        "scope": "tcp_after_sniff",
+        "source_sampled_at": 1700000000.0,
+        "status": "available",
+        "total": 1,
+        "truncated": false,
+        "view": "recent"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1700000000.0
+    },
+    "method": "GET",
+    "name": "retention_gap",
+    "path": "/api/v1/decisions",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "boot_id": "00000000-0000-4000-8000-000000000002",
+        "capacity": 1024,
+        "complete_history": false,
+        "discarded_records": 4,
+        "freshness": {
+          "age_seconds": 0,
+          "max_age_seconds": 25,
+          "stale": false
+        },
+        "gap": true,
+        "items": [],
+        "latest_sequence": 0,
+        "next_cursor": "00000000-0000-4000-8000-000000000002:0:ac089e8f8c6f96d49ad8575a",
+        "next_sequence": 0,
+        "oldest_sequence": 0,
+        "retention_seconds": 300,
+        "scope": "tcp_after_sniff",
+        "source_sampled_at": 1700000000.0,
+        "status": "no_records",
+        "total": 0,
+        "truncated": false,
+        "view": "recent"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1700000000.0
+    },
+    "method": "GET",
+    "name": "no_recent_records",
+    "path": "/api/v1/connections?view=recent",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "boot_id": "00000000-0000-4000-8000-000000000002",
+        "client_path_verified": false,
+        "config_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "configuration_changed": false,
+        "connected_address": "93.184.215.14",
+        "connection_id": "1",
+        "correlation_id": null,
+        "dns": {
+          "addresses": null,
+          "complete_answers": false,
+          "server": null,
+          "source": "unknown",
+          "status": "unknown"
+        },
+        "failure_stage": null,
+        "follow_redirects": false,
+        "limitations": [
+          "This probes the gateway outbound, not an end device's path.",
+          "Complete DNS answers and remote proxy node/target addresses may be unavailable."
+        ],
+        "method": "HEAD",
+        "outbound_id": "direct",
+        "probe_id": "00000000-0000-4000-8000-000000000002",
+        "probe_source": "gateway_local_proxy",
+        "result": {
+          "ms": 25,
+          "ok": true,
+          "status": 204
+        },
+        "stages": {
+          "http": "completed",
+          "tcp": "connected",
+          "tls": "completed"
+        },
+        "status": "passed",
+        "timed_out": false,
+        "timings_ms": {
+          "http": 4,
+          "local_proxy": 1,
+          "tls": 20
+        },
+        "url": "https://example.com/health"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": 1700000000.0
+    },
+    "method": "POST",
+    "name": "staged_probe_joined",
+    "path": "/api/v1/diagnostics/probe",
+    "request": {
+      "url": "https://example.com/health"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "complete_history": false,
+        "items": [
+          {
+            "chains": [
+              "FixtureNode",
+              "FixtureGroup"
+            ],
+            "decision_status": "observed_snapshot",
+            "download": 2,
+            "id": "mihomo-fixture",
+            "metadata": {
+              "host": "example.com",
+              "network": "tcp",
+              "sourceIP": "192.0.2.1"
+            },
+            "rule": "DomainSuffix",
+            "rulePayload": "example.com",
+            "start": "2023-11-14T22:13:20Z",
+            "upload": 1
+          }
+        ],
+        "limitations": [
+          "Mihomo can cache snapshots; an empty snapshot does not prove no traffic."
+        ],
+        "remote_target_verified": false,
+        "source": "mihomo_connection_snapshot",
+        "source_age_seconds": null
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": null
+    },
+    "method": "GET",
+    "name": "mihomo_snapshot",
+    "path": "/api/v1/mihomo/connections",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "complete_history": false,
+        "items": [
+          {
+            "boot_id": "00000000-0000-4000-8000-000000000002",
+            "first_seen_at": 1700000000.0,
+            "id": "mihomo-fixture",
+            "last_seen_at": 1700000000.0,
+            "record": {
+              "chains": [
+                "FixtureNode",
+                "FixtureGroup"
+              ],
+              "download": 2,
+              "id": "mihomo-fixture",
+              "metadata": {
+                "host": "example.com",
+                "network": "tcp",
+                "sourceIP": "192.0.2.1"
+              },
+              "rule": "DomainSuffix",
+              "rulePayload": "example.com",
+              "start": "2023-11-14T22:13:20Z",
+              "upload": 1
+            },
+            "source": "mihomo_snapshot"
+          }
+        ],
+        "limitations": [
+          "Polling can miss short mihomo connections; absence is not proof of no traffic.",
+          "A missing later snapshot does not prove a connection ended or succeeded.",
+          "Remote proxy DNS and final remote target addresses are not inferred."
+        ],
+        "max_rows": 100000,
+        "next_before": null,
+        "status": "available"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": null
+    },
+    "method": "GET",
+    "name": "persisted_history",
+    "path": "/api/v1/history?domain=example.com",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "data": {
+        "complete_history": false,
+        "items": [],
+        "limitations": [
+          "Polling can miss short mihomo connections; absence is not proof of no traffic.",
+          "A missing later snapshot does not prove a connection ended or succeeded.",
+          "Remote proxy DNS and final remote target addresses are not inferred."
+        ],
+        "max_rows": 100000,
+        "next_before": null,
+        "status": "no_records"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": null
+    },
+    "method": "GET",
+    "name": "history_no_records",
+    "path": "/api/v1/history?domain=missing.example",
+    "request": null,
+    "status": 200
+  },
+  {
+    "body": {
+      "api_version": "1",
+      "error": {
+        "code": "CORE_UNAVAILABLE"
+      },
+      "fetched_at": 1700000000.0,
+      "instance_id": "00000000-0000-4000-8000-000000000001",
+      "request_id": "fixture-request-1",
+      "sampled_at": null
+    },
+    "method": "GET",
+    "name": "core_stopped",
+    "path": "/api/v1/health",
+    "request": null,
+    "status": 503
+  }
+]

@@ -15,3 +15,6 @@ ppgw.exe
 /ppsub.json
 FILES/etc/dropbear/
 sniffbox/target/
+/dist/
+__pycache__/
+*.pyc

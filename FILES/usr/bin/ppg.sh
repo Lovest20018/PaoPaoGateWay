@@ -24,14 +24,28 @@ if [ -c /dev/tty0 ]; then
     done
 fi
 export PPGWTTY
+if [ "${PPGW_DEBIAN:-0}" = "1" ]; then
+    PPGWTTYS=""
+    PPGWTTY=/var/lib/paopaogw/logs/controller.log
+    export PPGWTTY
+fi
 # a line to every console
 ppgwecho() {
+    if [ "${PPGW_DEBIAN:-0}" = "1" ]; then
+        mkdir -p /var/lib/paopaogw/logs
+        if [ "$(stat -c %s "$PPGWTTY" 2>/dev/null || echo 0)" -gt 1048576 ]; then
+            mv "$PPGWTTY" "$PPGWTTY.previous"
+        fi
+        printf '%b\n' "$1" | sed -E 's#https?://[^ ]+#<redacted-url>#g' | tee -a "$PPGWTTY"
+        return
+    fi
     for ppgwtty in $PPGWTTYS; do
         echo -e "$1" >"$ppgwtty" 2>/dev/null
     done
 }
 # stdin to every console
 ppgwout() {
+    if [ "${PPGW_DEBIAN:-0}" = "1" ]; then cat; return; fi
     tee $PPGWTTYS >/dev/null 2>&1
 }
 
@@ -77,6 +91,7 @@ load_ini() {
         [ -f "$PPGW_ENV" ] || return 1
     fi
     . "$PPGW_ENV"
+    if [ "${PPGW_DEBIAN:-0}" = "1" ]; then cloudflared_token=""; export cloudflared_token; fi
     apply_defaults
     return 0
 }
@@ -282,11 +297,11 @@ load_box() {
     if nft list ruleset | grep -q "ppgw_tproxy"; then
         if [ "$force_reload" = "force" ]; then
             log "[RELOAD] Reload nft rule..." warn
-            /usr/bin/nft.sh
+            /usr/bin/nft.sh || exit 1
         fi
     else
         log "[ADD] Add nft rule..." warn
-        /usr/bin/nft.sh
+        /usr/bin/nft.sh || exit 1
     fi
     if pidof sniffbox >/dev/null 2>&1; then
         log "sniffbox Running OK." succ
@@ -296,7 +311,7 @@ load_box() {
 }
 kill_box(){
     safe_kill "/usr/bin/sniffbox"
-    nft flush ruleset
+    if [ "${PPGW_DEBIAN:-0}" != "1" ]; then nft flush ruleset; fi
 }
 hot_reload_box(){
     pid=$(pidof sniffbox)
@@ -570,7 +585,7 @@ get_conf() {
             fi
             echo "$genHost" >>/etc/hosts
         fi
-        if echo "$down_url" | grep https; then
+        if echo "$down_url" | grep -q https; then
             sync_ntp
         fi
         ppgw -downURL "$down_url" -output "$file_down_tmp" >"$PPGWTTY" 2>&1
@@ -668,6 +683,22 @@ try_conf() {
     conf_name=$1
     down_type=$2
     log "Try to get new ""$conf_name"
+    if [ "${PPGW_DEBIAN:-0}" = "1" ]; then
+        case "$conf_name" in
+            ''|*/*|*..*) ;;
+            *)
+                if [ -f "/www/$conf_name" ] && [ "$down_type" = "yaml" ]; then
+                    cp "/www/$conf_name" /tmp/ppgw.yaml.down
+                    cp "/www/$conf_name" /tmp/paopao_custom.yaml
+                    return 0
+                fi
+                if [ -f "/www/$conf_name" ] && [ "$down_type" = "ovpn" ]; then
+                    cp "/www/$conf_name" /tmp/ppgw.ovpn.down
+                    return 0
+                fi
+                ;;
+        esac
+    fi
     if [ -f /www/ppgwurl.ini ] && [ "$down_type" = "ini" ]; then
         . /www/ppgwurl.ini
         if [ -n "$ppgwurl" ]; then
@@ -743,8 +774,11 @@ try_conf() {
 reload_gw() {
     require_ini "reload_gw" || return 1
     force_nft="$1"
-    . /etc/profile
+    if [ "${PPGW_DEBIAN:-0}" != "1" ]; then . /etc/profile; fi
     sync_ntp
+    if [ "${PPGW_DEBIAN:-0}" = "1" ]; then
+        /usr/local/lib/paopaogw/network.py start || exit 1
+    else
     # ip_forward
     if sysctl -a 2>&1 | grep -qE "net\.ipv4\.ip_forward[ =]+1"; then
         log "[SYSCTL] Turn off net.ipv4.ip_forward..." warn
@@ -799,6 +833,8 @@ reload_gw() {
             ip -6 rule add fwmark 1 table 100
         fi
     fi
+
+    fi # Debian owns only its reserved policy rule/route; no host sysctl changes.
 
     if [ "$mode" = "yaml" ] || [ "$mode" = "suburl" ]; then
         sed 's/\r/\n/g' /etc/config/clash/base.yaml >/tmp/clash_base.yaml
@@ -856,6 +892,12 @@ reload_gw() {
                 fi
             fi
         fi
+        if [ "${PPGW_DEBIAN:-0}" = "1" ]; then
+            if ! /usr/bin/python3 /usr/local/lib/paopaogw/clash_policy.py /tmp/clash.yaml; then
+                log "Local policy could not be applied; keeping the current gateway." warn
+                return 1
+            fi
+        fi
         if [ "$force_nft" = "force" ]; then
             load_box force
         else
@@ -879,6 +921,10 @@ reload_gw() {
     fi
 
 }
+
+if [ "${PPGW_DEBIAN:-0}" = "1" ]; then
+    . /usr/local/lib/paopaogw/runtime.sh
+fi
 
 if [ "$1" = "reload" ]; then
     log "Force reload gateway..." warn
@@ -1113,8 +1159,12 @@ while true; do
         load_box
         if pidof clash >/dev/null 2>&1; then
             log "Clash Running OK." succ
-            if [ "$mode" = "suburl" ] && echo "$suburl" | grep -qEo "^ppsub@"; then
-                ppgw -healthcheck "/etc/config/clash/clash-dashboard/data/ppsub.json" >"$PPGWTTY" 2>&1
+            ppgw_health_file="/etc/config/clash/clash-dashboard/data/ppsub.json"
+            if ! echo "$suburl" | grep -qEo "^ppsub@"; then
+                ppgw_health_file="/etc/config/clash/clash-dashboard/data/ppsub-policy.json"
+            fi
+            if [ -f "$ppgw_health_file" ]; then
+                ppgw -healthcheck "$ppgw_health_file" >"$PPGWTTY" 2>&1
                 hc_rc=$?
                 if [ "$hc_rc" -eq 0 ]; then
                     echo PPsub health check succ
@@ -1128,7 +1178,7 @@ while true; do
                     log "PPsub: Try to update and reload..." warn
                     get_conf "$suburl" "yaml" || log "Failed to update suburl, keep current config." warn
                     reload_gw
-                    ppgw -healthcheck "/etc/config/clash/clash-dashboard/data/ppsub.json" >"$PPGWTTY" 2>&1
+                    ppgw -healthcheck "$ppgw_health_file" >"$PPGWTTY" 2>&1
                     hc_rc2=$?
                     if [ "$hc_rc2" -eq 0 ] || [ "$hc_rc2" -eq 3 ]; then
                         hc_fail_streak=0

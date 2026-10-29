@@ -359,12 +359,16 @@ async fn handle_conn(
                 }
             }
             router::Route::Native => {
-
+                let max_body = if req.path_only() == "/sniffbox/subscription/apply" {
+                    crate::subscription::MAX_BODY
+                } else {
+                    MAX_NATIVE_BODY
+                };
                 let (body, leftover) = match http::read_body_bounded(
                     &mut stream,
                     req.framing()?,
                     body_prefix,
-                    MAX_NATIVE_BODY,
+                    max_body,
                 )
                 .await
                 {

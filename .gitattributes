@@ -1,0 +1,7 @@
+/FILES/usr/bin/ppg.sh text eol=lf
+/FILES/usr/bin/nft.sh text eol=lf
+/deploy/** text eol=lf
+/integration/** text eol=lf
+/scripts/** text eol=lf
+/tests/** text eol=lf
+/.github/workflows/debian.yml text eol=lf

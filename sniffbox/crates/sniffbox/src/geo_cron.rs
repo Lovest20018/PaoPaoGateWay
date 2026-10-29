@@ -5,6 +5,11 @@ use std::sync::Arc;
 use std::time::Duration;
 
 pub(crate) const PPSUB_JSON: &str = "/etc/config/clash/clash-dashboard/data/ppsub.json";
+pub(crate) fn ppsub_config_path() -> &'static str {
+    let native = crate::production::ini_value("suburl").unwrap_or_default().starts_with("ppsub@");
+    let policy = "/etc/config/clash/clash-dashboard/data/ppsub-policy.json";
+    if !native && std::path::Path::new(policy).is_file() { policy } else { PPSUB_JSON }
+}
 
 const MARKER: &str = "/tmp/sniffbox_georestart.last";
 
@@ -29,7 +34,7 @@ async fn tick(geo: &Arc<WebGeo>) {
     if !crate::runtime::ppsub_active() {
         return;
     }
-    let Ok(json) = std::fs::read_to_string(PPSUB_JSON) else {
+    let Ok(json) = std::fs::read_to_string(ppsub_config_path()) else {
         return;
     };
     let Some(hour) = parse_restart_hour(&json) else {

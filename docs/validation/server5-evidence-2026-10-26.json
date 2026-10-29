@@ -1,0 +1,193 @@
+{
+  "kind": "provider_evidence_v1_1",
+  "checks": {
+    "lookup_no_allocation": true,
+    "lookup_matches_actual_dns": true,
+    "probe_stages_and_exact_connection_join": true,
+    "completed_short_connection_retained": true,
+    "cursor_filter_binding": true,
+    "actual_outbound_connect_failure": true,
+    "core_restart_expires_cursor_and_history": true
+  },
+  "mapping": {
+    "api_version": "1",
+    "instance_id": "771563c8-b58b-4960-863c-0149cdeb52b4",
+    "fetched_at": 1793001343.954153,
+    "sampled_at": 1793001343.953,
+    "data": {
+      "status": "matched",
+      "source": "actual_fakeip_cache",
+      "domain": "example.com",
+      "fakeip": "7.80.78.144",
+      "cidr": "7.0.0.0/8",
+      "dns_ttl_seconds": 3,
+      "valid_until": null,
+      "validity": "until_evicted_or_core_restart",
+      "algorithm_prediction": false,
+      "historical_ownership_verified": false,
+      "boot_id": "986b6fd0-8c6c-4d08-96ab-57303ee2a808",
+      "source_sampled_at": 1793001343.953,
+      "freshness": {
+        "age_seconds": 0.0011436939239501953,
+        "max_age_seconds": 25,
+        "stale": false
+      }
+    },
+    "request_id": "7716512f-34d2-4916-a8dc-57cd5ac3c69e"
+  },
+  "probe": {
+    "api_version": "1",
+    "instance_id": "771563c8-b58b-4960-863c-0149cdeb52b4",
+    "fetched_at": 1793001344.6551807,
+    "sampled_at": 1793001344.6551702,
+    "data": {
+      "probe_id": "29799bcf-aea8-4c39-83aa-9865a0dafa7b",
+      "connection_id": "8052938610552340481",
+      "correlation_id": "evidence-live",
+      "config_revision": "c99fcc7479b71dbe1cc2aafb62f9a19a3280f5269bf6f71cc2da5993e9864dae",
+      "boot_id": "986b6fd0-8c6c-4d08-96ab-57303ee2a808",
+      "configuration_changed": false,
+      "status": "passed",
+      "probe_source": "gateway_local_proxy",
+      "url": "https://example.com/",
+      "method": "HEAD",
+      "follow_redirects": false,
+      "result": {
+        "ok": true,
+        "status": 200,
+        "ms": 640.261
+      },
+      "failure_stage": null,
+      "dns": {
+        "status": "selected_address_observed",
+        "source": "gateway_resolver_or_cache",
+        "server": "223.5.5.5:53",
+        "addresses": [
+          "104.20.23.154"
+        ],
+        "complete_answers": false
+      },
+      "connected_address": "104.20.23.154",
+      "outbound_id": "direct",
+      "stages": {
+        "tcp": "connected",
+        "tls": "completed",
+        "http": "completed"
+      },
+      "timings_ms": {
+        "local_proxy": 1.7,
+        "tls": 423.088,
+        "http": 215.152
+      },
+      "timed_out": false,
+      "client_path_verified": false,
+      "limitations": [
+        "This probes the gateway outbound, not an end device's path.",
+        "Complete DNS answers and remote proxy node/target addresses may be unavailable."
+      ]
+    },
+    "request_id": "29a6546d-bae3-4cc3-8ac3-f22171c4a4a0"
+  },
+  "short_connection": {
+    "id": "8052938610552340481",
+    "started_at": 1793001343.995,
+    "ended_at": 1793001344.634,
+    "last_observed_at": 1793001344.634,
+    "state": "closed",
+    "sequence": 1,
+    "transport": "tcp",
+    "inbound": "healthcheck",
+    "source_address": "127.0.0.1",
+    "source_port": 48202,
+    "original_destination": "0.0.0.0",
+    "destination_port": 443,
+    "domain": "example.com",
+    "domain_source": "tls",
+    "actual_target_address": "104.20.23.154",
+    "upstream_peer": "104.20.23.154:443",
+    "upload": 709,
+    "download": 4788,
+    "resolution": {
+      "source": "gateway_resolver_or_cache",
+      "server": "223.5.5.5:53",
+      "domain": "example.com",
+      "selected_address": "104.20.23.154",
+      "complete_answers": false
+    },
+    "decision": {
+      "status": "observed",
+      "source": "sniffbox_outbound_dispatch",
+      "rule_id": "mode:free",
+      "rule_kind": "mode_dispatch",
+      "reason": "free_mode_no_rule",
+      "outbound_id": "direct",
+      "fallback": false,
+      "config_revision": "c99fcc7479b71dbe1cc2aafb62f9a19a3280f5269bf6f71cc2da5993e9864dae",
+      "decided_at": 1793001343.995,
+      "connect_result": "connected",
+      "failure_stage": null,
+      "application_result": "unknown"
+    }
+  },
+  "failed_connections": [
+    {
+      "id": "8052938610552340482",
+      "started_at": 1793001344.961,
+      "ended_at": 1793001344.962,
+      "last_observed_at": 1793001344.962,
+      "state": "failed_or_cancelled",
+      "sequence": 2,
+      "transport": "tcp",
+      "inbound": "healthcheck",
+      "source_address": "127.0.0.1",
+      "source_port": 48206,
+      "original_destination": "127.0.0.1",
+      "destination_port": 34417,
+      "domain": null,
+      "domain_source": "tls",
+      "actual_target_address": null,
+      "upstream_peer": null,
+      "upload": 0,
+      "download": 0,
+      "resolution": {
+        "source": "literal_destination",
+        "server": "223.5.5.5:53",
+        "domain": null,
+        "selected_address": null,
+        "complete_answers": false
+      },
+      "decision": {
+        "status": "observed",
+        "source": "sniffbox_outbound_dispatch",
+        "rule_id": "mode:free",
+        "rule_kind": "mode_dispatch",
+        "reason": "free_mode_no_rule",
+        "outbound_id": "direct",
+        "fallback": false,
+        "config_revision": "c99fcc7479b71dbe1cc2aafb62f9a19a3280f5269bf6f71cc2da5993e9864dae",
+        "decided_at": 1793001344.961,
+        "connect_result": "failed",
+        "failure_stage": "outbound_connect",
+        "application_result": "unknown"
+      }
+    }
+  ],
+  "instance": {
+    "id": "771563c8-b58b-4960-863c-0149cdeb52b4",
+    "kind": "paopaogateway",
+    "edition": "debian",
+    "name": "PaoPaoGateway",
+    "version": "0.1.0-hnm-v1.20261026.2",
+    "build_commit": "67600f73bb27c8bb6cc451069314060201c4f7e4",
+    "source_sha256": "c333782bff372e80eebac57cffe7da61e4494e11d758135100bf28cac56aafc2",
+    "core_version": "0.1.0-hnm-v1",
+    "boot_id": "45aea2d7-8015-4757-9f8e-7937123a80db",
+    "config_revision": "c99fcc7479b71dbe1cc2aafb62f9a19a3280f5269bf6f71cc2da5993e9864dae"
+  },
+  "sampled_at": 1793001346.3860126,
+  "limitations": [
+    "Only free-mode IPv4 is tested here.",
+    "Decision is mode dispatch, not domain-rule simulation.",
+    "History covers TCP after sniffing; bounded retention is not a complete traffic ledger."
+  ]
+}

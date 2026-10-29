@@ -1,0 +1,52 @@
+{
+  "kind": "isolated_transparent_ingress",
+  "sampled_at": 1793001356.2862847,
+  "started_at": 1793001354.4994624,
+  "source": "independent_docker_client",
+  "gateway_ip": "172.17.0.4",
+  "request": [
+    {
+      "dns_server": "172.17.0.4",
+      "domain": "example.com",
+      "fakeip": "7.80.78.144"
+    },
+    {
+      "curl_returncode": 0,
+      "http_status": "200",
+      "tls_verification": "curl_default_enabled",
+      "proxy_used": false
+    }
+  ],
+  "observed_connections": [
+    {
+      "id": "14743072140894928897",
+      "start": "2026-10-26T07:55:55.251Z",
+      "upload": 517,
+      "download": 0,
+      "metadata": {
+        "network": "tcp",
+        "type": "TProxy",
+        "sourceIP": "172.17.0.3",
+        "sourcePort": "59064",
+        "destinationIP": "7.80.78.144",
+        "destinationPort": "443",
+        "host": "example.com"
+      },
+      "ended_at": null,
+      "last_observed_at": null,
+      "state": "snapshot",
+      "actual_target_address": null,
+      "outbound_id": null,
+      "source_identity": "observed_address_only",
+      "decision": {
+        "status": "unavailable",
+        "reason": "not_instrumented"
+      }
+    }
+  ],
+  "passed": true,
+  "limitations": [
+    "One free-mode IPv4 lab flow; not household ROS/DNS/IPv6 validation.",
+    "Selected node/rule and final outbound address are unavailable in this provider."
+  ]
+}

@@ -194,12 +194,13 @@ impl Outbound {
                         "ovpn tunnel (tun114) not ready",
                     ));
                 }
-                let addr = match domain {
-                    Some(host) => {
+                let addr = match direct_literal_destination(dest, domain) {
+                    Some(address) => address,
+                    None => {
+                        let host = domain.expect("non-literal destination has domain");
                         let ip = d.resolver.resolve_v4(host).await?;
                         SocketAddr::new(std::net::IpAddr::V4(ip), dest.port())
                     }
-                    None => dest,
                 };
                 connect_tcp_direct(
                     addr,
@@ -212,6 +213,14 @@ impl Outbound {
             }
         }
     }
+}
+
+fn direct_literal_destination(dest: SocketAddr, domain: Option<&str>) -> Option<SocketAddr> {
+    // FakeIP is IPv4-only. Native IPv6 has already been resolved by the client;
+    // preserve that destination and do not silently replace it with an A query.
+    if dest.is_ipv6() || domain.is_none() { return Some(dest); }
+    domain.and_then(|host| host.parse::<std::net::IpAddr>().ok())
+        .map(|ip| SocketAddr::new(ip, dest.port()))
 }
 
 #[cfg(test)]
@@ -265,6 +274,32 @@ mod tests {
     use std::net::{IpAddr, Ipv4Addr};
     use tokio::io::{AsyncReadExt, AsyncWriteExt};
     use tokio::net::{TcpListener, UdpSocket};
+
+    #[test]
+    fn ipv6_literal_and_client_resolved_destination_never_enter_ipv4_dns() {
+        let v6: SocketAddr = "[2001:db8::3]:8088".parse().unwrap();
+        assert_eq!(direct_literal_destination(v6, Some("2001:db8::3")), Some(v6));
+        assert_eq!(direct_literal_destination(v6, Some("example.com")), Some(v6));
+        let v4: SocketAddr = "198.18.0.3:8088".parse().unwrap();
+        assert_eq!(direct_literal_destination(v4, Some("198.18.0.3")), Some(v4));
+        assert_eq!(direct_literal_destination(v4, Some("example.com")), None);
+    }
+
+    #[tokio::test]
+    async fn direct_ipv6_http_literal_connects_to_real_echo_server() {
+        let listener = TcpListener::bind("[::1]:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+        tokio::spawn(async move {
+            let (mut socket, _) = listener.accept().await.unwrap();
+            let mut bytes = [0u8; 4]; socket.read_exact(&mut bytes).await.unwrap();
+            socket.write_all(&bytes).await.unwrap();
+        });
+        let outbound = Outbound::build(&Config::default());
+        let mut socket = outbound.connect_once(addr, Some("::1")).await.unwrap();
+        socket.write_all(b"test").await.unwrap();
+        let mut bytes = [0u8; 4]; socket.read_exact(&mut bytes).await.unwrap();
+        assert_eq!(&bytes, b"test");
+    }
 
     fn cfg_with_outbound(outbound: OutboundCfg, socks_server: SocketAddr) -> Config {
         Config {

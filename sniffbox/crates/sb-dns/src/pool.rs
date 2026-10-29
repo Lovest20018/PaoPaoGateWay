@@ -159,6 +159,23 @@ impl FakeIpPool {
         }
     }
 
+    /// Observe the actual cache without allocating, resolving, or promoting LRU entries.
+    pub fn peek_domain(&self, domain: &str) -> Option<Ipv4Addr> {
+        let domain = domain.to_ascii_lowercase();
+        let hash = rapidhash(domain.as_bytes(), RAPIDHASH_SEED);
+        let shard = self.shards[fastrange(hash, self.n_shards) as usize].lock();
+        let index = *shard.by_domain.get(domain.as_str())?;
+        Some(Ipv4Addr::from(shard.nodes[index as usize].ip))
+    }
+
+    pub fn peek_ip(&self, ip: Ipv4Addr) -> Option<Arc<str>> {
+        let ip = u32::from(ip);
+        let index = ip.checked_sub(self.lo)? / self.span;
+        let shard = self.shards.get(index as usize)?.lock();
+        let node = *shard.by_ip.get(&ip)?;
+        Some(Arc::clone(&shard.nodes[node as usize].domain))
+    }
+
     pub fn ttl(&self) -> u32 {
         self.ttl
     }
@@ -332,6 +349,43 @@ fn empty_arc() -> Arc<str> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn observation_does_not_allocate_or_promote_lru() {
+        let pool = pool_sharded("7.0.0.0/24", 2, 1);
+        let first = pool.intern("first.example");
+        let _second = pool.intern("second.example");
+        assert_eq!(pool.peek_domain("FIRST.EXAMPLE"), Some(first));
+        assert_eq!(pool.peek_ip(first).as_deref(), Some("first.example"));
+        assert_eq!(pool.peek_domain("missing.example"), None);
+        assert_eq!(pool.len(), 2);
+        pool.intern("third.example");
+        assert_eq!(pool.peek_domain("first.example"), None, "lookup must not protect from eviction");
+    }
+
+    #[test]
+    fn observation_uses_assigned_addresses_after_hash_collision() {
+        let pool = pool_sharded("7.0.0.0/27", 20, 1);
+        let mut initial = std::collections::HashMap::new();
+        let mut pair = None;
+        for index in 0..1000 {
+            let domain = format!("{index}.example");
+            let h = fmix64(rapidhash(domain.as_bytes(), RAPIDHASH_SEED));
+            let ip = fastrange(h, pool.span);
+            if let Some(previous) = initial.insert(ip, domain.clone()) {
+                pair = Some((previous, domain));
+                break;
+            }
+        }
+        let (first, second) = pair.expect("small pool must have a collision");
+        let a = pool.intern(&first);
+        let b = pool.intern(&second);
+        assert_ne!(a, b);
+        assert_eq!(pool.peek_domain(&second), Some(b));
+        assert_eq!(pool.peek_ip(a).as_deref(), Some(first.as_str()));
+        assert_eq!(pool.peek_ip(b).as_deref(), Some(second.as_str()));
+        assert_eq!(pool.peek_ip("1.1.1.1".parse().unwrap()), None);
+    }
 
     fn pool_sharded(cidr: &str, max_entries: usize, shards: u32) -> FakeIpPool {
         FakeIpPool::new(FakeIpConfig {

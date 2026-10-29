@@ -1,7 +1,7 @@
 // Copyright (c) 2026, https://blog.03k.org. All rights reserved.
 
 use serde_json::{Map, Value};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
@@ -132,7 +132,7 @@ impl WebProxies {
         let test_url = read_test_url(&self.ppgw_ini);
 
         let smart_urls: HashMap<String, String> =
-            std::fs::read_to_string(crate::geo_cron::PPSUB_JSON)
+            std::fs::read_to_string(crate::geo_cron::ppsub_config_path())
                 .map(|j| {
                     crate::smart_speed::parse_smart_groups(&j)
                         .into_iter()
@@ -367,12 +367,13 @@ pub(crate) fn build_trimmed(
     let mut providers = Map::new();
     for (name, pv) in &providers_raw.providers {
         let mut names = Vec::new();
+        let mut seen = HashSet::new();
         for node in &pv.proxies {
             let Some(n) = node.name.as_deref() else {
                 continue;
             };
 
-            if n == sb_ppgw::ppsub::SMART_HIDE_NODE {
+            if n == sb_ppgw::ppsub::SMART_HIDE_NODE || !seen.insert(n) {
                 continue;
             }
             names.push(Value::String(n.to_string()));
@@ -442,13 +443,14 @@ fn trim_one(name: &str, p: &RawNode) -> Value {
     }
 
     if let Some(all) = &p.all {
-        let before = all.len();
+        let mut seen = HashSet::new();
         let kept: Vec<Value> = all
             .iter()
             .filter(|n| n.as_str() != sb_ppgw::ppsub::SMART_HIDE_NODE)
+            .filter(|n| seen.insert(n.as_str()))
             .map(|n| Value::String(n.clone()))
             .collect();
-        if kept.len() != before && name != "GLOBAL" {
+        if all.iter().any(|n| n == sb_ppgw::ppsub::SMART_HIDE_NODE) && name != "GLOBAL" {
             m.insert("smart".into(), Value::Bool(true));
         }
         m.insert("all".into(), Value::Array(kept));
@@ -675,6 +677,25 @@ mod tests {
 
         assert_eq!(out["providers"]["AirA"]["proxies"], json!(["N2"]));
         assert_eq!(out["providers"]["AirA"]["subscriptionInfo"]["Total"], 100);
+    }
+
+    #[test]
+    fn duplicate_group_and_provider_members_keep_first_occurrence() {
+        let proxies = json!({"proxies": {
+            "G": {"type": "Selector", "all": ["N2", "N1", "N2", "N1"], "now": "N2"},
+            "N1": {"type": "Trojan"}, "N2": {"type": "Trojan"}
+        }});
+        let providers = json!({"providers": {"Air": {"proxies": [
+            {"name": "N2"}, {"name": "N1"}, {"name": "N2"}
+        ]}}});
+        let out: Value = serde_json::from_str(&build_trimmed(
+            &px(proxies), &pv(providers), "rule", "u", &HashMap::new(),
+            &|_| None, &HashMap::new(),
+        )).unwrap();
+        assert_eq!(out["proxies"]["G"]["all"], json!(["N2", "N1"]));
+        assert_eq!(out["providers"]["Air"]["proxies"], json!(["N2", "N1"]));
+        assert_eq!(out["proxies"]["G"]["now"], "N2");
+        assert!(out["proxies"]["G"].get("smart").is_none());
     }
 
     #[test]

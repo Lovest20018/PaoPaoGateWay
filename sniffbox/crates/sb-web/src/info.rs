@@ -10,4 +10,8 @@ pub enum InfoScope {
 pub trait InfoSource: Send + Sync {
 
     fn info_json(&self, scope: InfoScope) -> String;
+
+    fn evidence_json(&self, _query: &str) -> Option<String> {
+        None
+    }
 }

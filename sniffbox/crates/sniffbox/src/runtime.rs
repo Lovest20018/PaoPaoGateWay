@@ -62,6 +62,9 @@ impl AtomicRoute {
 }
 
 pub struct SharedState {
+    pub configuration_gate: std::sync::RwLock<()>,
+    pub integration: crate::integration::Identity,
+    pub observations: crate::evidence::Observations,
 
     pub route: AtomicRoute,
 
@@ -131,7 +134,6 @@ pub struct CfTraffic {
 }
 
 impl CfTraffic {
-
     pub fn add(&self, down: u64, up: u64) {
         self.down.fetch_add(down, Ordering::Relaxed);
         self.up.fetch_add(up, Ordering::Relaxed);
@@ -162,6 +164,9 @@ impl SharedState {
         let outbound = Outbound::build(cfg);
         let fakeip = build_fakeip(cfg);
         Self {
+            configuration_gate: std::sync::RwLock::new(()),
+            integration: crate::integration::Identity::new(cfg),
+            observations: crate::evidence::Observations::new(cfg.outbound.mode),
             route: AtomicRoute::new(&cfg.route),
             outbound,
             outbound_mode: cfg.outbound.mode,
@@ -265,6 +270,7 @@ impl SharedState {
     }
 
     pub fn reload(&self, new_cfg: &Config) {
+        let _configuration = self.configuration_gate.write().unwrap_or_else(|e| e.into_inner());
         self.route.store(&new_cfg.route);
 
         self.splice_copy
@@ -314,6 +320,7 @@ impl SharedState {
                 "listen address changed on reload — restart required to take effect"
             );
         }
+        self.integration.record(new_cfg);
     }
 }
 
@@ -323,7 +330,6 @@ pub struct WebTraffic {
 
 impl sb_web::TrafficSource for WebTraffic {
     fn snapshot_json(&self) -> Arc<String> {
-
         let now = sb_stats::now_epoch_ms();
         let prev = self.shared.traffic_last_access.swap(now, Ordering::Relaxed);
         if prev == 0 || now.saturating_sub(prev) > TRAFFIC_DEMAND_WINDOW_MS {
@@ -350,7 +356,6 @@ impl sb_web::ConnectionsSource for WebConnections {
         connections_snapshot(&self.shared)
     }
     fn close_all(&self) {
-
         self.shared.close_registry.clear();
     }
     fn close_one(&self, id: &str) -> bool {
@@ -367,7 +372,6 @@ pub struct WebClashConnections {
 
 impl sb_web::ConnectionsSource for WebClashConnections {
     fn connections_json(&self) -> String {
-
         self.shared
             .clash_conns_last_access
             .store(sb_stats::now_epoch_ms(), Ordering::Relaxed);
@@ -398,7 +402,6 @@ pub struct WebCloudflared {
 }
 
 impl WebCloudflared {
-
     fn traffic_json(&self) -> serde_json::Value {
         let (down, up) = self.shared.cf_traffic.totals();
         let active = self
@@ -426,7 +429,6 @@ impl sb_web::CloudflaredSource for WebCloudflared {
             .procs
             .iter()
             .map(|p| {
-
                 let acc = self.sup.bytes(p.egress);
                 let metrics = p
                     .running
@@ -535,7 +537,6 @@ impl InfoStatic {
 
 #[derive(Default)]
 struct InfoSample {
-
     cpu: Option<(u64, u64)>,
 
     cpu_cores: Vec<(u64, u64)>,
@@ -627,6 +628,10 @@ impl WebInfo {
 }
 
 pub fn ppsub_active() -> bool {
+    if std::env::var("PPGW_DEBIAN").as_deref() == Ok("1")
+        && std::path::Path::new("/etc/config/clash/clash-dashboard/data/ppsub-policy.json").is_file() {
+        return true;
+    }
     env_or_ini("mode")
         .as_deref()
         .map(|s| s.trim().trim_matches('"'))
@@ -665,7 +670,6 @@ fn openport_effective(listen_count: usize, nft_open: Option<bool>) -> bool {
 }
 
 impl WebInfo {
-
     fn static_value(&self) -> serde_json::Value {
         use crate::sysinfo;
         let (mem_total, _) = sysinfo::meminfo();
@@ -807,7 +811,6 @@ impl WebInfo {
         let mut cf_uptime = None;
 
         {
-
             let mut s = self.sample.lock().unwrap_or_else(|e| e.into_inner());
             let total_delta = match (s.cpu, now_cpu) {
                 (Some(prev), Some(cur)) => cur.0.saturating_sub(prev.0),
@@ -913,6 +916,7 @@ impl WebInfo {
         let r1 = |v: f64| (v * 10.0).round() / 10.0;
         serde_json::json!({
             "timestamp": ts,
+            "integration": self.shared.integration.value(),
             "uptime": sysinfo::uptime_secs(),
             "memory": {
                 "available": mem_avail,
@@ -1002,7 +1006,11 @@ fn merge_json(a: &mut serde_json::Value, b: serde_json::Value) {
 }
 
 impl sb_web::InfoSource for WebInfo {
+    fn evidence_json(&self, query: &str) -> Option<String> {
+        Some(crate::evidence::query(&self.shared, query).to_string())
+    }
     fn info_json(&self, scope: sb_web::InfoScope) -> String {
+        let _configuration = self.shared.configuration_gate.read().unwrap_or_else(|e| e.into_inner());
         let v = match scope {
             sb_web::InfoScope::Static => self.static_value(),
             sb_web::InfoScope::Dynamic => self.dynamic_value(),
@@ -1060,7 +1068,6 @@ pub fn inbound_type_str(inbound: InboundKind) -> &'static str {
 }
 
 fn conn_json(r: &ConnRecord) -> serde_json::Value {
-
     let conn_type = if r.kind == RecordKind::Internal {
         "Inner"
     } else {
@@ -1607,7 +1614,6 @@ mod tests {
 
     #[test]
     fn auto_max_entries_capped_by_usable() {
-
         assert!(
             read_mem_available_bytes().is_some(),
             "MemAvailable readable on Linux host"
@@ -1615,7 +1621,6 @@ mod tests {
         let big = sb_dns::usable_addrs("7.0.0.0/8".parse().unwrap());
         let small = sb_dns::usable_addrs("7.0.0.0/24".parse().unwrap());
         for pct in [1u8, 30, 100] {
-
             let n = auto_max_entries(pct, big);
             assert!(
                 n <= big as usize && n >= 4096.min(big as usize),

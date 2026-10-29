@@ -1,0 +1,154 @@
+{
+  "kind": "isolated-debian-validation",
+  "checks": {
+    "auth_failure": true,
+    "forbidden_target_and_ipv6": true,
+    "actual_request": true,
+    "api_stopped_core_dns_continued": true,
+    "restart_identity_and_revision": true,
+    "effective_revision_change_and_restore": true,
+    "core_stop_no_automatic_restart": true,
+    "host_hosts_and_unrelated_firewall_preserved": true
+  },
+  "instance": {
+    "id": "771563c8-b58b-4960-863c-0149cdeb52b4",
+    "kind": "paopaogateway",
+    "edition": "debian",
+    "name": "PaoPaoGateway",
+    "version": "0.1.0-hnm-v1.20261026.1",
+    "build_commit": "67600f73bb27c8bb6cc451069314060201c4f7e4",
+    "source_sha256": "7c97c3accc7034f2ae9e0bd213fb200b2e3f99f0fc09a3517408fe080ff1b597",
+    "core_version": "0.1.0-hnm-v1",
+    "boot_id": "377ffa78-f351-4d25-89c7-dfc9703b9156",
+    "config_revision": "c99fcc7479b71dbe1cc2aafb62f9a19a3280f5269bf6f71cc2da5993e9864dae"
+  },
+  "runtime": {
+    "api_version": "1",
+    "instance_id": "771563c8-b58b-4960-863c-0149cdeb52b4",
+    "fetched_at": 1792996539.6786563,
+    "sampled_at": 1792996539,
+    "data": {
+      "status": "available",
+      "core_responding": true,
+      "outbound_reachable": "unknown",
+      "forwarding_verified": false,
+      "source": "sniffbox",
+      "boot_id": "377ffa78-f351-4d25-89c7-dfc9703b9156",
+      "config_revision": "c99fcc7479b71dbe1cc2aafb62f9a19a3280f5269bf6f71cc2da5993e9864dae",
+      "configuration": {
+        "configuration_state": "loaded",
+        "loaded_at": 1792996539.4265254,
+        "last_load_result": "success",
+        "revision_scope": "sniffbox_config",
+        "reload_policy": "restart"
+      },
+      "core_version": "0.1.0-hnm-v1",
+      "build_commit": "67600f73bb27c8bb6cc451069314060201c4f7e4",
+      "outbound": {
+        "mode": "free",
+        "selected_id": null,
+        "reachability": "unknown",
+        "component_state": "unknown"
+      },
+      "trusted_dns": {
+        "ip": "223.5.5.5",
+        "port": 53
+      },
+      "source_sampled_at": 1792996539,
+      "freshness": {
+        "age_seconds": 0.6784989833831787,
+        "max_age_seconds": 25,
+        "stale": false
+      },
+      "mode": "free",
+      "version": "0.1.0-hnm-v1",
+      "uptime_seconds": 5722065,
+      "fakeip": {
+        "cidr": "7.0.0.0/8",
+        "mapped": 0
+      },
+      "features": {
+        "net_rec": false,
+        "openport": false,
+        "udp_enable": false
+      },
+      "connections": {
+        "active": 0,
+        "tcp": 0,
+        "udp": 0,
+        "clients": 0
+      },
+      "traffic": {
+        "downloadTotal": 0,
+        "uploadTotal": 0
+      },
+      "memory": {
+        "total": 8296218624,
+        "available": 7048966144,
+        "sniffbox_rss": 9121792
+      }
+    },
+    "request_id": "lab-validation-20261026"
+  },
+  "dns_fakeip": {
+    "source": "lab-loopback-dns",
+    "domain": "example.com",
+    "type": "A",
+    "answer": "7.80.78.144"
+  },
+  "local_proxy": {
+    "source": "gateway_local_proxy",
+    "returncode": 0,
+    "http_status_lines": [
+      "HTTP/2 200 "
+    ]
+  },
+  "probe": {
+    "api_version": "1",
+    "instance_id": "771563c8-b58b-4960-863c-0149cdeb52b4",
+    "fetched_at": 1792996540.8924582,
+    "sampled_at": 1792996540.8924549,
+    "data": {
+      "probe_id": "dd365682-8eae-4e5c-93bc-6f3367ce0bef",
+      "connection_id": null,
+      "correlation_id": "lab-probe",
+      "config_revision": "c99fcc7479b71dbe1cc2aafb62f9a19a3280f5269bf6f71cc2da5993e9864dae",
+      "boot_id": "377ffa78-f351-4d25-89c7-dfc9703b9156",
+      "configuration_changed": false,
+      "status": "passed",
+      "probe_source": "gateway_local_proxy",
+      "url": "https://example.com/",
+      "method": "HEAD",
+      "follow_redirects": false,
+      "result": {
+        "ok": true,
+        "status": 200,
+        "ms": 608
+      },
+      "failure_stage": null,
+      "dns": {
+        "status": "unknown",
+        "source": "gateway_outbound",
+        "addresses": null
+      },
+      "connected_address": null,
+      "outbound_id": null,
+      "stages": {
+        "tcp": "unknown",
+        "tls": "unknown",
+        "http": "completed"
+      },
+      "client_path_verified": false,
+      "limitations": [
+        "This probes the gateway outbound, not an end device's path.",
+        "DNS addresses, selected node and TCP/TLS stages are not instrumented."
+      ]
+    },
+    "request_id": "lab-validation-20261026"
+  },
+  "limitations": [
+    "Local proxy probe is not a transparent-ingress or client-path test.",
+    "DNS real address, final target address, rule/node decision and TLS/TCP stage evidence unavailable.",
+    "Only free mode and IPv4 lab DNS have been exercised; other modes require separate validation."
+  ]
+}

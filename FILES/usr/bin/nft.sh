@@ -3,7 +3,8 @@ IPREX4='([0-9]{1,2}|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.([0-9]{1,2}|1[0-9][0-9]|2[
 # exported by ppg.sh, which is what starts nft.sh
 PPGWTTY=${PPGWTTY:-/dev/console}
 if [ -f /tmp/ppgw.ini ]; then
-    . /tmp/ppgw.ini 2>"$PPGWTTY"
+    /usr/bin/sniffbox ppgw -ini-export /tmp/ppgw.ini >/tmp/ppgw.nft.env || exit 1
+    . /tmp/ppgw.nft.env 2>"$PPGWTTY"
 fi
 dns1=$(grep nameserver /etc/resolv.conf | grep -Eo "$IPREX4" | head -1)
 dns2=$(grep nameserver /etc/resolv.conf | grep -Eo "$IPREX4" | tail -1)
@@ -13,6 +14,12 @@ fi
 
 if [ -z "$dns_port" ]; then
     dns_port="53"
+fi
+dns1=${dns1:-$dns_ip}
+dns2=${dns2:-$dns1}
+ingress_rule=""
+if [ "${PPGW_DEBIAN:-0}" = "1" ]; then
+    ingress_rule="                iifname != \"$PPGW_INTERFACE\" return"
 fi
 
 if [ -z "$udp_enable" ]; then
@@ -43,7 +50,7 @@ cf_port=1082
 cf_dns=1.1.1.1
 cf_dns6=2606:4700:4700::1111
 cf_enable="no"
-if [ -n "$cloudflared_token" ] || [ -x /usr/bin/cloudflared ]; then
+if [ "${PPGW_DEBIAN:-0}" != "1" ] && { [ -n "$cloudflared_token" ] || [ -x /usr/bin/cloudflared ]; }; then
     cf_enable="yes"
 fi
 if [ "$cf_enable" = "yes" ]; then
@@ -149,6 +156,7 @@ table ip6 ppgw {
         }
         chain ppgw_tproxy6 {
                 type filter hook prerouting priority mangle; policy accept;
+$ingress_rule
                 meta l4proto != { tcp, udp } return
 $cf_tproxy_rule6
                 iif "lo" return
@@ -167,8 +175,23 @@ else
     IP6_TABLE=""
 fi
 
-/usr/sbin/nft -f - << EOF
-flush ruleset
+reset="flush ruleset"
+ingress_rule=""
+if [ "${PPGW_DEBIAN:-0}" = "1" ]; then
+    reset=""
+    for family in ip ip6; do
+        if /usr/sbin/nft list table "$family" ppgw >/dev/null 2>&1; then
+            reset="$reset
+delete table $family ppgw"
+        fi
+    done
+    ingress_rule="                iifname != \"$PPGW_INTERFACE\" return"
+fi
+
+rules=$(mktemp)
+trap 'rm -f "$rules"' EXIT
+cat >"$rules" << EOF
+$reset
 
 define DNS_O1 = $dns1
 define DNS_O2 = $dns2
@@ -196,6 +219,7 @@ table ip ppgw {
         }
         chain ppgw_tproxy {
                 type filter hook prerouting priority mangle; policy accept;
+$ingress_rule
                 ip protocol != { tcp, udp } return
 $cf_tproxy_rule
                 iif "lo" return
@@ -223,3 +247,9 @@ $cf_dns_rule
 $cf_output_chain}
 $IP6_TABLE
 EOF
+if [ "${PPGW_DEBIAN:-0}" = "1" ]; then
+    # DNS output interception and fake-ping must not affect other host services.
+    sed '/        chain fakeping {/,/        }/d; /        chain hijackdns {/,/        }/d' "$rules" >"$rules.filtered"
+    mv "$rules.filtered" "$rules"
+fi
+/usr/sbin/nft -c -f "$rules" && /usr/sbin/nft -f "$rules"

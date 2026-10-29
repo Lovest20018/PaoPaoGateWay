@@ -1,0 +1,26 @@
+{
+  "api_url": "http://192.168.1.41:18788",
+  "instance_id": "771563c8-b58b-4960-863c-0149cdeb52b4",
+  "version": "0.1.0-hnm-v1.20261026.1",
+  "source_sha256": "7c97c3accc7034f2ae9e0bd213fb200b2e3f99f0fc09a3517408fe080ff1b597",
+  "package_sha256": "e973bd20322629e44d76feed81f5536c89218da62e92df07560ed8999e83cc3d",
+  "openapi_sha256": "76681c29889e1223a4ceb908877e8fc3c2a38599ea5bbcf8a3bf48f4043a1423",
+  "tests": {
+    "python_passed": 15,
+    "rust_passed": 881,
+    "rust_ignored": 5,
+    "fixtures": 13
+  },
+  "live_checks": {
+    "auth_failure": true,
+    "forbidden_target_and_ipv6": true,
+    "actual_request": true,
+    "api_stopped_core_dns_continued": true,
+    "restart_identity_and_revision": true,
+    "effective_revision_change_and_restore": true,
+    "core_stop_no_automatic_restart": true,
+    "host_hosts_and_unrelated_firewall_preserved": true,
+    "transparent_ingress": true,
+    "uninstall_reinstall_preserved": true
+  }
+}

@@ -4,12 +4,12 @@ use std::process::Command;
 
 fn main() {
     println!("cargo:rerun-if-env-changed=SNIFFBOX_VERSION");
+    println!("cargo:rerun-if-env-changed=PPGW_BUILD_COMMIT");
     println!("cargo:rerun-if-changed=.git/HEAD");
 
     let version = if let Ok(v) = std::env::var("SNIFFBOX_VERSION") {
         v
     } else {
-
         match Command::new("git")
             .args(["log", "-1", "--format=%cd-%h", "--date=format:%Y%m%d"])
             .output()

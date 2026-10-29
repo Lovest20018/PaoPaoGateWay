@@ -1,0 +1,3700 @@
+{
+  "components": {
+    "schemas": {
+      "Capabilities": {
+        "properties": {
+          "access_role": {
+            "const": "observer"
+          },
+          "address_families": {
+            "type": "object"
+          },
+          "api_version": {
+            "const": "1"
+          },
+          "config_revision": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "feature_states": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "features": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "type": "object"
+          },
+          "follows_redirects": {
+            "const": false
+          },
+          "freshness": {
+            "properties": {
+              "age_seconds": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "max_age_seconds": {
+                "const": 25
+              },
+              "stale": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "age_seconds",
+              "max_age_seconds",
+              "stale"
+            ],
+            "type": "object"
+          },
+          "instance_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "limits": {
+            "properties": {
+              "connections": {
+                "const": 200
+              },
+              "probe_concurrency": {
+                "const": 2
+              },
+              "probe_timeout_ms": {
+                "const": 10000
+              }
+            },
+            "required": [
+              "connections",
+              "probe_timeout_ms",
+              "probe_concurrency"
+            ],
+            "type": "object"
+          },
+          "mode": {
+            "enum": [
+              "free",
+              "socks5",
+              "yaml",
+              "suburl",
+              "ovpn"
+            ],
+            "type": "string"
+          },
+          "permissions": {
+            "properties": {
+              "configure": {
+                "type": "boolean"
+              },
+              "diagnose": {
+                "type": "boolean"
+              },
+              "maintain": {
+                "type": "boolean"
+              },
+              "observe": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "observe",
+              "diagnose",
+              "configure",
+              "maintain"
+            ],
+            "type": "object"
+          },
+          "probe_method": {
+            "const": "HEAD"
+          },
+          "probe_policy": {
+            "const": "exact_url_allowlist"
+          },
+          "probe_source": {
+            "const": "gateway_local_proxy"
+          },
+          "probe_urls": {
+            "items": {
+              "format": "uri",
+              "type": "string"
+            },
+            "maxItems": 16,
+            "type": "array"
+          },
+          "protocols": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "available",
+              "stale"
+            ],
+            "type": "string"
+          },
+          "supported_modes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "api_version",
+          "instance_id",
+          "access_role",
+          "permissions",
+          "features",
+          "feature_states",
+          "mode",
+          "supported_modes",
+          "address_families",
+          "probe_policy",
+          "probe_method",
+          "probe_source",
+          "follows_redirects",
+          "protocols",
+          "config_revision",
+          "status",
+          "freshness",
+          "probe_urls",
+          "limits"
+        ],
+        "type": "object"
+      },
+      "Connections": {
+        "oneOf": [
+          {
+            "properties": {
+              "complete_history": {
+                "const": false
+              },
+              "freshness_known": {
+                "const": false
+              },
+              "items": {
+                "items": {
+                  "properties": {
+                    "actual_target_address": {
+                      "type": "null"
+                    },
+                    "decision": {
+                      "properties": {
+                        "reason": {
+                          "const": "not_instrumented"
+                        },
+                        "status": {
+                          "const": "unavailable"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "reason"
+                      ],
+                      "type": "object"
+                    },
+                    "download": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "ended_at": {
+                      "type": "null"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "last_observed_at": {
+                      "type": "null"
+                    },
+                    "metadata": {
+                      "type": "object"
+                    },
+                    "outbound_id": {
+                      "type": "null"
+                    },
+                    "source_identity": {
+                      "const": "observed_address_only"
+                    },
+                    "start": {
+                      "type": "string"
+                    },
+                    "state": {
+                      "const": "snapshot"
+                    },
+                    "upload": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "metadata",
+                    "state",
+                    "decision"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 200,
+                "type": "array"
+              },
+              "limitations": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "next_offset": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "offset": {
+                "maximum": 10000,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "pagination": {
+                "const": "best_effort_live_offset"
+              },
+              "source": {
+                "const": "sniffbox_connection_snapshot"
+              },
+              "source_age_seconds": {
+                "type": "null"
+              },
+              "source_sampled_at": {
+                "type": "null"
+              },
+              "status": {
+                "enum": [
+                  "available",
+                  "no_records"
+                ],
+                "type": "string"
+              },
+              "total": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "truncated": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "source",
+              "items",
+              "status",
+              "total",
+              "truncated",
+              "offset",
+              "next_offset",
+              "pagination",
+              "source_sampled_at",
+              "source_age_seconds",
+              "freshness_known",
+              "complete_history",
+              "limitations"
+            ],
+            "type": "object"
+          },
+          {
+            "$ref": "#/components/schemas/ObservationPage"
+          }
+        ]
+      },
+      "Error": {
+        "properties": {
+          "api_version": {
+            "const": "1"
+          },
+          "error": {
+            "properties": {
+              "code": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code"
+            ],
+            "type": "object"
+          },
+          "fetched_at": {
+            "description": "API retrieval time, UTC Unix seconds",
+            "minimum": 0,
+            "type": "number"
+          },
+          "instance_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "request_id": {
+            "pattern": "^[A-Za-z0-9_-]{8,64}$",
+            "type": "string"
+          },
+          "sampled_at": {
+            "description": "UTC Unix seconds; original source time, null if unavailable",
+            "minimum": 0,
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "api_version",
+          "instance_id",
+          "request_id",
+          "fetched_at",
+          "sampled_at",
+          "error"
+        ],
+        "type": "object"
+      },
+      "FakeIp": {
+        "properties": {
+          "algorithm_prediction": {
+            "const": false
+          },
+          "boot_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "cidr": {
+            "type": "string"
+          },
+          "dns_ttl_seconds": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "domain": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fakeip": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "freshness": {
+            "properties": {
+              "age_seconds": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "max_age_seconds": {
+                "const": 25
+              },
+              "stale": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "age_seconds",
+              "max_age_seconds",
+              "stale"
+            ],
+            "type": "object"
+          },
+          "historical_ownership_verified": {
+            "const": false
+          },
+          "source": {
+            "const": "actual_fakeip_cache"
+          },
+          "source_sampled_at": {
+            "description": "UTC Unix seconds; original source time, null if unavailable",
+            "minimum": 0,
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "status": {
+            "enum": [
+              "matched",
+              "no_records"
+            ],
+            "type": "string"
+          },
+          "valid_until": {
+            "type": "null"
+          },
+          "validity": {
+            "const": "until_evicted_or_core_restart"
+          }
+        },
+        "required": [
+          "status",
+          "source",
+          "domain",
+          "fakeip",
+          "cidr",
+          "dns_ttl_seconds",
+          "valid_until",
+          "validity",
+          "algorithm_prediction",
+          "historical_ownership_verified",
+          "boot_id",
+          "source_sampled_at",
+          "freshness"
+        ],
+        "type": "object"
+      },
+      "Health": {
+        "properties": {
+          "boot_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "config_revision": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "core_responding": {
+            "const": true
+          },
+          "forwarding_verified": {
+            "const": false
+          },
+          "freshness": {
+            "properties": {
+              "age_seconds": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "max_age_seconds": {
+                "const": 25
+              },
+              "stale": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "age_seconds",
+              "max_age_seconds",
+              "stale"
+            ],
+            "type": "object"
+          },
+          "outbound_reachable": {
+            "const": "unknown"
+          },
+          "source_sampled_at": {
+            "description": "UTC Unix seconds; original source time, null if unavailable",
+            "minimum": 0,
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "status": {
+            "enum": [
+              "available",
+              "stale"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "core_responding",
+          "outbound_reachable",
+          "forwarding_verified",
+          "boot_id",
+          "config_revision",
+          "source_sampled_at",
+          "freshness"
+        ],
+        "type": "object"
+      },
+      "History": {
+        "properties": {
+          "complete_history": {
+            "const": false
+          },
+          "items": {
+            "items": {
+              "properties": {
+                "boot_id": {
+                  "type": "string"
+                },
+                "first_seen_at": {
+                  "description": "UTC Unix seconds; original source time, null if unavailable",
+                  "minimum": 0,
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "id": {
+                  "type": "string"
+                },
+                "last_seen_at": {
+                  "description": "UTC Unix seconds; original source time, null if unavailable",
+                  "minimum": 0,
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "record": {
+                  "type": "object"
+                },
+                "source": {
+                  "enum": [
+                    "sniffbox_lifecycle",
+                    "mihomo_snapshot"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "boot_id",
+                "id",
+                "source",
+                "first_seen_at",
+                "last_seen_at",
+                "record"
+              ],
+              "type": "object"
+            },
+            "maxItems": 500,
+            "type": "array"
+          },
+          "next_before": {
+            "minimum": 1,
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "status": {
+            "enum": [
+              "available",
+              "no_records"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "items",
+          "next_before",
+          "complete_history"
+        ],
+        "type": "object"
+      },
+      "Instance": {
+        "properties": {
+          "boot_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "build_commit": {
+            "type": "string"
+          },
+          "config_revision": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "core_version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "edition": {
+            "const": "debian"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "kind": {
+            "const": "paopaogateway"
+          },
+          "name": {
+            "type": "string"
+          },
+          "source_sha256": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "edition",
+          "name",
+          "version",
+          "build_commit",
+          "core_version",
+          "source_sha256",
+          "boot_id",
+          "config_revision"
+        ],
+        "type": "object"
+      },
+      "Metrics": {
+        "properties": {
+          "freshness": {
+            "properties": {
+              "age_seconds": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "max_age_seconds": {
+                "const": 25
+              },
+              "stale": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "age_seconds",
+              "max_age_seconds",
+              "stale"
+            ],
+            "type": "object"
+          },
+          "metrics": {
+            "items": {
+              "properties": {
+                "available": {
+                  "type": "boolean"
+                },
+                "boot_id": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "counter",
+                    "gauge"
+                  ],
+                  "type": "string"
+                },
+                "name": {
+                  "enum": [
+                    "download_total",
+                    "upload_total",
+                    "active_connections",
+                    "memory_total",
+                    "memory_available",
+                    "core_memory_used"
+                  ],
+                  "type": "string"
+                },
+                "reset": {
+                  "enum": [
+                    "core_restart",
+                    null
+                  ],
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "sampled_at": {
+                  "description": "UTC Unix seconds; original source time, null if unavailable",
+                  "minimum": 0,
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "unit": {
+                  "enum": [
+                    "bytes",
+                    "connections"
+                  ],
+                  "type": "string"
+                },
+                "value": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "unit",
+                "sampled_at",
+                "value",
+                "available",
+                "kind",
+                "reset",
+                "boot_id"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "source": {
+            "const": "sniffbox"
+          },
+          "source_sampled_at": {
+            "description": "UTC Unix seconds; original source time, null if unavailable",
+            "minimum": 0,
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "source",
+          "source_sampled_at",
+          "freshness",
+          "metrics"
+        ],
+        "type": "object"
+      },
+      "MihomoSnapshots": {
+        "properties": {
+          "complete_history": {
+            "const": false
+          },
+          "items": {
+            "items": {
+              "properties": {
+                "chains": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "decision_status": {
+                  "enum": [
+                    "observed_snapshot",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                "download": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "id": {
+                  "type": "string"
+                },
+                "metadata": {
+                  "type": "object"
+                },
+                "rule": {
+                  "type": "string"
+                },
+                "rulePayload": {
+                  "type": "string"
+                },
+                "start": {
+                  "type": "string"
+                },
+                "upload": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "metadata",
+                "decision_status"
+              ],
+              "type": "object"
+            },
+            "maxItems": 500,
+            "type": "array"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "remote_target_verified": {
+            "const": false
+          },
+          "source": {
+            "const": "mihomo_connection_snapshot"
+          },
+          "source_age_seconds": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "items",
+          "source",
+          "complete_history",
+          "source_age_seconds",
+          "remote_target_verified",
+          "limitations"
+        ],
+        "type": "object"
+      },
+      "ObservationPage": {
+        "properties": {
+          "boot_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "capacity": {
+            "const": 1024
+          },
+          "complete_history": {
+            "const": false
+          },
+          "discarded_records": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "freshness": {
+            "properties": {
+              "age_seconds": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "max_age_seconds": {
+                "const": 25
+              },
+              "stale": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "age_seconds",
+              "max_age_seconds",
+              "stale"
+            ],
+            "type": "object"
+          },
+          "gap": {
+            "type": "boolean"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ObservedRecord"
+            },
+            "maxItems": 200,
+            "type": "array"
+          },
+          "latest_sequence": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "next_cursor": {
+            "maxLength": 128,
+            "type": "string"
+          },
+          "next_sequence": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "oldest_sequence": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "retention_seconds": {
+            "const": 300
+          },
+          "scope": {
+            "const": "tcp_after_sniff"
+          },
+          "source_sampled_at": {
+            "description": "UTC Unix seconds; original source time, null if unavailable",
+            "minimum": 0,
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "status": {
+            "enum": [
+              "available",
+              "no_records"
+            ],
+            "type": "string"
+          },
+          "total": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "truncated": {
+            "type": "boolean"
+          },
+          "view": {
+            "enum": [
+              "active",
+              "recent"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "items",
+          "total",
+          "truncated",
+          "gap",
+          "discarded_records",
+          "capacity",
+          "retention_seconds",
+          "complete_history",
+          "scope",
+          "view",
+          "boot_id",
+          "source_sampled_at",
+          "freshness"
+        ],
+        "type": "object"
+      },
+      "ObservedRecord": {
+        "properties": {
+          "actual_target_address": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "decision": {
+            "properties": {
+              "application_result": {
+                "const": "unknown"
+              },
+              "config_revision": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "connect_result": {
+                "enum": [
+                  "unknown",
+                  "connected",
+                  "failed"
+                ],
+                "type": "string"
+              },
+              "decided_at": {
+                "description": "UTC Unix seconds; original source time, null if unavailable",
+                "minimum": 0,
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "failure_stage": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "fallback": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "outbound_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              },
+              "rule_id": {
+                "type": "string"
+              },
+              "rule_kind": {
+                "const": "mode_dispatch"
+              },
+              "source": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "observed",
+                  "unavailable"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "status",
+              "source",
+              "rule_id",
+              "rule_kind",
+              "reason",
+              "outbound_id",
+              "fallback",
+              "config_revision",
+              "decided_at",
+              "connect_result",
+              "application_result"
+            ],
+            "type": "object"
+          },
+          "destination_port": {
+            "maximum": 65535,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "domain": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "download": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "ended_at": {
+            "description": "UTC Unix seconds; original source time, null if unavailable",
+            "minimum": 0,
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "inbound": {
+            "type": "string"
+          },
+          "last_observed_at": {
+            "description": "UTC Unix seconds; original source time, null if unavailable",
+            "minimum": 0,
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "original_destination": {
+            "type": "string"
+          },
+          "resolution": {
+            "properties": {
+              "complete_answers": {
+                "const": false
+              },
+              "domain": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "selected_address": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "server": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "source": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "sequence": {
+            "minimum": 0,
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "source_address": {
+            "type": "string"
+          },
+          "source_port": {
+            "maximum": 65535,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "started_at": {
+            "description": "UTC Unix seconds; original source time, null if unavailable",
+            "minimum": 0,
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "state": {
+            "enum": [
+              "connecting",
+              "active",
+              "closed",
+              "failed_or_cancelled"
+            ],
+            "type": "string"
+          },
+          "transport": {
+            "const": "tcp"
+          },
+          "upload": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "upstream_peer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "state",
+          "decision"
+        ],
+        "type": "object"
+      },
+      "Probe": {
+        "properties": {
+          "boot_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "client_path_verified": {
+            "const": false
+          },
+          "config_revision": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "configuration_changed": {
+            "type": "boolean"
+          },
+          "connected_address": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "connection_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "correlation_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "dns": {
+            "type": "object"
+          },
+          "failure_stage": {
+            "enum": [
+              "http",
+              "tls",
+              "local_proxy",
+              "outbound_connect",
+              "unknown",
+              null
+            ],
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "follow_redirects": {
+            "const": false
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "method": {
+            "const": "HEAD"
+          },
+          "outbound_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "probe_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "probe_source": {
+            "const": "gateway_local_proxy"
+          },
+          "result": {
+            "type": "object"
+          },
+          "stages": {
+            "type": "object"
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed",
+              "unknown"
+            ],
+            "type": "string"
+          },
+          "timed_out": {
+            "type": "boolean"
+          },
+          "timings_ms": {
+            "additionalProperties": {
+              "minimum": 0,
+              "type": "number"
+            },
+            "type": "object"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "probe_id",
+          "connection_id",
+          "correlation_id",
+          "config_revision",
+          "boot_id",
+          "configuration_changed",
+          "status",
+          "probe_source",
+          "url",
+          "method",
+          "follow_redirects",
+          "result",
+          "failure_stage",
+          "dns",
+          "connected_address",
+          "outbound_id",
+          "stages",
+          "client_path_verified",
+          "limitations"
+        ],
+        "type": "object"
+      },
+      "ProbeRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "address_family": {
+            "default": "auto",
+            "enum": [
+              "auto"
+            ],
+            "type": "string"
+          },
+          "correlation_id": {
+            "pattern": "^[A-Za-z0-9_-]{1,64}$",
+            "type": "string"
+          },
+          "outbound_id": {
+            "type": "null"
+          },
+          "timeout_ms": {
+            "default": 5000,
+            "maximum": 10000,
+            "minimum": 1000,
+            "type": "integer"
+          },
+          "url": {
+            "format": "uri",
+            "maxLength": 2048,
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "type": "object"
+      },
+      "Runtime": {
+        "properties": {
+          "boot_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "build_commit": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "config_revision": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "configuration": {
+            "type": "object"
+          },
+          "connections": {
+            "type": "object"
+          },
+          "core_responding": {
+            "const": true
+          },
+          "core_version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fakeip": {
+            "type": "object"
+          },
+          "features": {
+            "type": "object"
+          },
+          "forwarding_verified": {
+            "const": false
+          },
+          "freshness": {
+            "properties": {
+              "age_seconds": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "max_age_seconds": {
+                "const": 25
+              },
+              "stale": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "age_seconds",
+              "max_age_seconds",
+              "stale"
+            ],
+            "type": "object"
+          },
+          "memory": {
+            "type": "object"
+          },
+          "mihomo_configuration": {
+            "properties": {
+              "effective_revision": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "loaded_at": {
+                "description": "UTC Unix seconds; original source time, null if unavailable",
+                "minimum": 0,
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "policy_revision": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "revision_scope": {
+                "const": "mihomo_source_policy_effective"
+              },
+              "source_revision": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "loaded",
+                  "conflict",
+                  "invalid"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "status",
+              "revision_scope"
+            ],
+            "type": "object"
+          },
+          "mode": {
+            "type": "string"
+          },
+          "outbound": {
+            "type": "object"
+          },
+          "outbound_reachable": {
+            "const": "unknown"
+          },
+          "source": {
+            "const": "sniffbox"
+          },
+          "source_sampled_at": {
+            "description": "UTC Unix seconds; original source time, null if unavailable",
+            "minimum": 0,
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "status": {
+            "enum": [
+              "available",
+              "stale"
+            ],
+            "type": "string"
+          },
+          "traffic": {
+            "type": "object"
+          },
+          "trusted_dns": {
+            "type": "object"
+          },
+          "uptime_seconds": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "core_responding",
+          "outbound_reachable",
+          "forwarding_verified",
+          "source",
+          "boot_id",
+          "config_revision",
+          "configuration",
+          "core_version",
+          "build_commit",
+          "outbound",
+          "trusted_dns",
+          "source_sampled_at",
+          "freshness",
+          "mode",
+          "version",
+          "uptime_seconds",
+          "fakeip",
+          "features",
+          "connections",
+          "traffic",
+          "memory"
+        ],
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "observerBearer": {
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Observer API; source semantics are documented in integration-api-v1.md",
+    "title": "PaoPaoGateway HNM Integration API",
+    "version": "1.2.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/capabilities": {
+      "get": {
+        "operationId": "capabilities",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Request-ID",
+            "schema": {
+              "pattern": "^[A-Za-z0-9_-]{8,64}$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "api_version": {
+                      "const": "1"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Capabilities"
+                    },
+                    "fetched_at": {
+                      "description": "API retrieval time, UTC Unix seconds",
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "instance_id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "request_id": {
+                      "pattern": "^[A-Za-z0-9_-]{8,64}$",
+                      "type": "string"
+                    },
+                    "sampled_at": {
+                      "description": "UTC Unix seconds; original source time, null if unavailable",
+                      "minimum": 0,
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "api_version",
+                    "instance_id",
+                    "request_id",
+                    "fetched_at",
+                    "sampled_at",
+                    "data"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Inspect semantic status; HTTP success does not verify forwarding"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          }
+        },
+        "summary": "Capabilities"
+      }
+    },
+    "/api/v1/connections": {
+      "get": {
+        "operationId": "connections",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Request-ID",
+            "schema": {
+              "pattern": "^[A-Za-z0-9_-]{8,64}$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 100,
+              "maximum": 200,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "default": 0,
+              "maximum": 10000,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "domain",
+            "schema": {
+              "maxLength": 253,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "client",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "schema": {
+              "description": "UTC Unix seconds; last observation, recent/observed_active only",
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "until",
+            "schema": {
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "schema": {
+              "maxLength": 128,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "view",
+            "schema": {
+              "default": "snapshot",
+              "enum": [
+                "snapshot",
+                "recent",
+                "observed_active"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "api_version": {
+                      "const": "1"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Connections"
+                    },
+                    "fetched_at": {
+                      "description": "API retrieval time, UTC Unix seconds",
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "instance_id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "request_id": {
+                      "pattern": "^[A-Za-z0-9_-]{8,64}$",
+                      "type": "string"
+                    },
+                    "sampled_at": {
+                      "description": "UTC Unix seconds; original source time, null if unavailable",
+                      "minimum": 0,
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "api_version",
+                    "instance_id",
+                    "request_id",
+                    "fetched_at",
+                    "sampled_at",
+                    "data"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Inspect semantic status; HTTP success does not verify forwarding"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          }
+        },
+        "summary": "Connections"
+      }
+    },
+    "/api/v1/decisions": {
+      "get": {
+        "operationId": "observationpage",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Request-ID",
+            "schema": {
+              "pattern": "^[A-Za-z0-9_-]{8,64}$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 100,
+              "maximum": 200,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "default": 0,
+              "maximum": 10000,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "domain",
+            "schema": {
+              "maxLength": 253,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "client",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "schema": {
+              "description": "UTC Unix seconds; last observation, recent/observed_active only",
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "until",
+            "schema": {
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "schema": {
+              "maxLength": 128,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "view",
+            "schema": {
+              "default": "recent",
+              "enum": [
+                "snapshot",
+                "recent",
+                "observed_active"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "api_version": {
+                      "const": "1"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ObservationPage"
+                    },
+                    "fetched_at": {
+                      "description": "API retrieval time, UTC Unix seconds",
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "instance_id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "request_id": {
+                      "pattern": "^[A-Za-z0-9_-]{8,64}$",
+                      "type": "string"
+                    },
+                    "sampled_at": {
+                      "description": "UTC Unix seconds; original source time, null if unavailable",
+                      "minimum": 0,
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "api_version",
+                    "instance_id",
+                    "request_id",
+                    "fetched_at",
+                    "sampled_at",
+                    "data"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Inspect semantic status; HTTP success does not verify forwarding"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          }
+        },
+        "summary": "ObservationPage"
+      }
+    },
+    "/api/v1/diagnostics/probe": {
+      "post": {
+        "operationId": "probe",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Request-ID",
+            "schema": {
+              "pattern": "^[A-Za-z0-9_-]{8,64}$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProbeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "api_version": {
+                      "const": "1"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Probe"
+                    },
+                    "fetched_at": {
+                      "description": "API retrieval time, UTC Unix seconds",
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "instance_id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "request_id": {
+                      "pattern": "^[A-Za-z0-9_-]{8,64}$",
+                      "type": "string"
+                    },
+                    "sampled_at": {
+                      "description": "UTC Unix seconds; original source time, null if unavailable",
+                      "minimum": 0,
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "api_version",
+                    "instance_id",
+                    "request_id",
+                    "fetched_at",
+                    "sampled_at",
+                    "data"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Inspect semantic status; HTTP success does not verify forwarding"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          }
+        },
+        "summary": "Probe"
+      }
+    },
+    "/api/v1/fakeip/lookup": {
+      "get": {
+        "description": "Exactly one of domain or IPv4 ip; actual cache only, no allocation or prediction.",
+        "operationId": "fakeip",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Request-ID",
+            "schema": {
+              "pattern": "^[A-Za-z0-9_-]{8,64}$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "domain",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ip",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "api_version": {
+                      "const": "1"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/FakeIp"
+                    },
+                    "fetched_at": {
+                      "description": "API retrieval time, UTC Unix seconds",
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "instance_id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "request_id": {
+                      "pattern": "^[A-Za-z0-9_-]{8,64}$",
+                      "type": "string"
+                    },
+                    "sampled_at": {
+                      "description": "UTC Unix seconds; original source time, null if unavailable",
+                      "minimum": 0,
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "api_version",
+                    "instance_id",
+                    "request_id",
+                    "fetched_at",
+                    "sampled_at",
+                    "data"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Inspect semantic status; HTTP success does not verify forwarding"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          }
+        },
+        "summary": "FakeIp"
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "operationId": "health",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Request-ID",
+            "schema": {
+              "pattern": "^[A-Za-z0-9_-]{8,64}$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "api_version": {
+                      "const": "1"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Health"
+                    },
+                    "fetched_at": {
+                      "description": "API retrieval time, UTC Unix seconds",
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "instance_id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "request_id": {
+                      "pattern": "^[A-Za-z0-9_-]{8,64}$",
+                      "type": "string"
+                    },
+                    "sampled_at": {
+                      "description": "UTC Unix seconds; original source time, null if unavailable",
+                      "minimum": 0,
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "api_version",
+                    "instance_id",
+                    "request_id",
+                    "fetched_at",
+                    "sampled_at",
+                    "data"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Inspect semantic status; HTTP success does not verify forwarding"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          }
+        },
+        "summary": "Health"
+      }
+    },
+    "/api/v1/history": {
+      "get": {
+        "operationId": "history",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Request-ID",
+            "schema": {
+              "pattern": "^[A-Za-z0-9_-]{8,64}$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "before",
+            "schema": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "domain",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "client",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source",
+            "schema": {
+              "enum": [
+                "sniffbox_lifecycle",
+                "mihomo_snapshot"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "api_version": {
+                      "const": "1"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/History"
+                    },
+                    "fetched_at": {
+                      "description": "API retrieval time, UTC Unix seconds",
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "instance_id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "request_id": {
+                      "pattern": "^[A-Za-z0-9_-]{8,64}$",
+                      "type": "string"
+                    },
+                    "sampled_at": {
+                      "description": "UTC Unix seconds; original source time, null if unavailable",
+                      "minimum": 0,
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "api_version",
+                    "instance_id",
+                    "request_id",
+                    "fetched_at",
+                    "sampled_at",
+                    "data"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Inspect semantic status; HTTP success does not verify forwarding"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          }
+        },
+        "summary": "History"
+      }
+    },
+    "/api/v1/instance": {
+      "get": {
+        "operationId": "instance",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Request-ID",
+            "schema": {
+              "pattern": "^[A-Za-z0-9_-]{8,64}$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "api_version": {
+                      "const": "1"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Instance"
+                    },
+                    "fetched_at": {
+                      "description": "API retrieval time, UTC Unix seconds",
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "instance_id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "request_id": {
+                      "pattern": "^[A-Za-z0-9_-]{8,64}$",
+                      "type": "string"
+                    },
+                    "sampled_at": {
+                      "description": "UTC Unix seconds; original source time, null if unavailable",
+                      "minimum": 0,
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "api_version",
+                    "instance_id",
+                    "request_id",
+                    "fetched_at",
+                    "sampled_at",
+                    "data"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Inspect semantic status; HTTP success does not verify forwarding"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          }
+        },
+        "summary": "Instance"
+      }
+    },
+    "/api/v1/metrics": {
+      "get": {
+        "operationId": "metrics",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Request-ID",
+            "schema": {
+              "pattern": "^[A-Za-z0-9_-]{8,64}$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "api_version": {
+                      "const": "1"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Metrics"
+                    },
+                    "fetched_at": {
+                      "description": "API retrieval time, UTC Unix seconds",
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "instance_id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "request_id": {
+                      "pattern": "^[A-Za-z0-9_-]{8,64}$",
+                      "type": "string"
+                    },
+                    "sampled_at": {
+                      "description": "UTC Unix seconds; original source time, null if unavailable",
+                      "minimum": 0,
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "api_version",
+                    "instance_id",
+                    "request_id",
+                    "fetched_at",
+                    "sampled_at",
+                    "data"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Inspect semantic status; HTTP success does not verify forwarding"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          }
+        },
+        "summary": "Metrics"
+      }
+    },
+    "/api/v1/mihomo/connections": {
+      "get": {
+        "operationId": "mihomosnapshots",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Request-ID",
+            "schema": {
+              "pattern": "^[A-Za-z0-9_-]{8,64}$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "api_version": {
+                      "const": "1"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/MihomoSnapshots"
+                    },
+                    "fetched_at": {
+                      "description": "API retrieval time, UTC Unix seconds",
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "instance_id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "request_id": {
+                      "pattern": "^[A-Za-z0-9_-]{8,64}$",
+                      "type": "string"
+                    },
+                    "sampled_at": {
+                      "description": "UTC Unix seconds; original source time, null if unavailable",
+                      "minimum": 0,
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "api_version",
+                    "instance_id",
+                    "request_id",
+                    "fetched_at",
+                    "sampled_at",
+                    "data"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Inspect semantic status; HTTP success does not verify forwarding"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          }
+        },
+        "summary": "MihomoSnapshots"
+      }
+    },
+    "/api/v1/runtime": {
+      "get": {
+        "operationId": "runtime",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Request-ID",
+            "schema": {
+              "pattern": "^[A-Za-z0-9_-]{8,64}$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "api_version": {
+                      "const": "1"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Runtime"
+                    },
+                    "fetched_at": {
+                      "description": "API retrieval time, UTC Unix seconds",
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "instance_id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "request_id": {
+                      "pattern": "^[A-Za-z0-9_-]{8,64}$",
+                      "type": "string"
+                    },
+                    "sampled_at": {
+                      "description": "UTC Unix seconds; original source time, null if unavailable",
+                      "minimum": 0,
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "api_version",
+                    "instance_id",
+                    "request_id",
+                    "fetched_at",
+                    "sampled_at",
+                    "data"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Inspect semantic status; HTTP success does not verify forwarding"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "501": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Stable error.code; no raw upstream text"
+          }
+        },
+        "summary": "Runtime"
+      }
+    }
+  },
+  "security": [
+    {
+      "observerBearer": []
+    }
+  ]
+}

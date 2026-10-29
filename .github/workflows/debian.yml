@@ -1,0 +1,44 @@
+name: Debian core and HNM API
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  debian:
+    runs-on: ubuntu-latest
+    container: rust:bookworm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends clang libclang-dev cmake perl g++ python3 python3-yaml python3-jsonschema nftables iproute2 systemd util-linux openvpn openssl
+          TOOLCHAIN=$(rustup default | cut -d' ' -f1)
+          rustup component add rustfmt --toolchain "$TOOLCHAIN"
+          echo "RUSTUP_TOOLCHAIN=$TOOLCHAIN" >> "$GITHUB_ENV"
+      - name: API and contract
+        run: |
+          python3 -m unittest discover -s tests -v
+          python3 scripts/export-api-contract.py
+          python3 scripts/check-api-contract.py
+          git diff --exit-code -- docs/openapi-v1.json integration/fixtures
+          sh -n FILES/usr/bin/ppg.sh
+          sh -n FILES/usr/bin/nft.sh
+      - name: Rust test and build
+        working-directory: sniffbox
+        env:
+          SNIFFBOX_VERSION: ${{ github.sha }}
+          PPGW_BUILD_COMMIT: ${{ github.sha }}
+        run: |
+          cargo test --workspace --locked
+          cargo build --release --locked -p sniffbox
+      - name: Package Debian amd64
+        run: |
+          SOURCE_SHA=$(python3 scripts/source-manifest.py)
+          python3 scripts/package-debian.py --binary sniffbox/target/release/sniffbox --version "dev-${GITHUB_SHA}" --commit "$GITHUB_SHA" --source-sha256 "$SOURCE_SHA" --arch amd64
+      - uses: actions/upload-artifact@v4
+        with:
+          name: paopaogw-debian-amd64
+          path: dist/paopaogw-*.tar.gz*

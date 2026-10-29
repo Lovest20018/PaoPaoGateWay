@@ -107,7 +107,10 @@ pub async fn serve_established(
         }
         r
     };
-    let route = shared.route.load();
+    let (route, configuration_revision) = {
+        let _configuration = shared.configuration_gate.read().unwrap_or_else(|e| e.into_inner());
+        (shared.route.load(), shared.integration.revision())
+    };
 
     let known_domain = est.domain.is_some();
     let ResolvedDomains {
@@ -201,6 +204,13 @@ pub async fn serve_established(
         rec.set_head(peek.bytes());
     }
     shared.conn_table.insert(Arc::clone(&rec));
+    shared.observations.begin(&rec, &configuration_revision);
+    let resolution_domain = if shared.outbound.is_direct() && (dest.is_ipv6()
+        || domain.as_deref().is_some_and(|host| host.parse::<std::net::IpAddr>().is_ok())) { None } else { domain.as_deref() };
+    shared.observations.resolution(rec.id, resolution_domain, match &*shared.outbound {
+        crate::outbound::Outbound::Direct(outbound) => Some(outbound.resolver.server()),
+        _ => None,
+    });
     if let Some(p) = &shared.pplog {
         p.open(&rec);
     }
@@ -227,6 +237,7 @@ pub async fn serve_established(
     }
 
     shared.conn_table.close(rec.id);
+    shared.observations.finish(&rec);
     if let Some(p) = &shared.pplog {
         p.close(&rec);
     }
@@ -247,12 +258,15 @@ async fn run_proxy(
     let mut upstream = match shared.outbound.connect_tcp(orig, domain).await {
         Ok(s) => s,
         Err(e) => {
+            shared.observations.connect_failed(rec.id);
             tracing::warn!(%orig, ?e, "outbound connect failed");
 
             let _ = client.shutdown().await;
             return Ok(());
         }
     };
+
+    shared.observations.connected(rec.id, upstream.peer_addr().ok());
 
     let socks_port = upstream.local_addr().map(|a| a.port()).unwrap_or(0);
     if socks_port != 0 {

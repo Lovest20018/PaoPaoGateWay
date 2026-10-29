@@ -20,7 +20,37 @@ pub async fn handle(
     body: &[u8],
     shutdown: &tokio::sync::watch::Receiver<bool>,
 ) -> io::Result<bool> {
+    if std::env::var("PPGW_DEBIAN").as_deref() == Ok("1") && req.path_only().starts_with("/sniffbox/cloudflared") {
+        respond::not_found(stream, ka).await?;
+        return Ok(ka);
+    }
     match req.path_only() {
+        path if path.starts_with("/sniffbox/subscription/") => {
+            if std::env::var("PPGW_DEBIAN").as_deref() != Ok("1") {
+                respond::not_found(stream, ka).await?;
+            } else {
+                let token = cfg.token.load_full();
+                crate::subscription::handle(stream, req, token.as_str(), ka, body).await?;
+            }
+            Ok(ka)
+        }
+        "/sniffbox/evidence" => {
+            if req.method != "POST" {
+                respond::send(stream, 405, "Method Not Allowed", &[], b"", ka).await?;
+            } else if let Some(source) = cfg.info.clone() {
+                let query = String::from_utf8_lossy(body).into_owned();
+                let value = tokio::task::spawn_blocking(move || source.evidence_json(&query))
+                    .await.ok().flatten();
+                if let Some(value) = value {
+                    respond::send(stream, 200, "OK", &[JSON], value.as_bytes(), ka).await?;
+                } else {
+                    respond::not_found(stream, ka).await?;
+                }
+            } else {
+                respond::not_found(stream, ka).await?;
+            }
+            Ok(ka)
+        }
         "/sniffbox/probe" => {
             probe(stream, req, cfg, ka, body).await?;
             Ok(ka)

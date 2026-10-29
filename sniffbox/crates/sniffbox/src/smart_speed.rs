@@ -289,7 +289,7 @@ async fn supervise(
     st_log!("scheduler started (sock={})", sock.display());
     loop {
         let groups = if crate::runtime::ppsub_active() {
-            std::fs::read_to_string(crate::geo_cron::PPSUB_JSON)
+            std::fs::read_to_string(crate::geo_cron::ppsub_config_path())
                 .map(|j| parse_smart_groups(&j))
                 .unwrap_or_default()
         } else {

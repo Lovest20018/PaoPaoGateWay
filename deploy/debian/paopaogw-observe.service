@@ -1,0 +1,21 @@
+[Unit]
+Description=PaoPaoGateway persistent observation collector
+After=paopaogw.service
+
+[Service]
+Type=simple
+User=paopaogw-api
+Group=paopaogw-api
+ExecStart=/usr/bin/python3 /usr/local/lib/paopaogw/observe.py
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/paopaogw/history
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

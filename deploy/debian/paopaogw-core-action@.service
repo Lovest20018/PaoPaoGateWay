@@ -1,0 +1,14 @@
+[Unit]
+Description=PaoPaoGateway owner-requested mihomo operation (%i)
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/lib/paopaogw/maintenance.py %i
+Environment=TZ=Asia/Shanghai
+UMask=0077
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/paopaogw /usr/local/lib/paopaogw/bin
+TimeoutStartSec=240

@@ -1,0 +1,12 @@
+[Unit]
+Description=Check official mihomo stable release every day
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=1d
+RandomizedDelaySec=10min
+Persistent=true
+Unit=paopaogw-maintenance.service
+
+[Install]
+WantedBy=timers.target

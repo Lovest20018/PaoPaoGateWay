@@ -1,0 +1,18 @@
+[Unit]
+Description=PaoPaoGateway native PPsub save/apply helper
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /usr/local/lib/paopaogw/subscription_admin.py
+Environment=TZ=Asia/Shanghai
+Restart=on-failure
+RestartSec=3
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=/etc/paopaogw/files /var/lib/paopaogw
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

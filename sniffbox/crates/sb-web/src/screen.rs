@@ -22,6 +22,17 @@ fn vcsa_path(vcs: &Path) -> PathBuf {
 }
 
 pub fn read_screen(vcs_dev: &Path) -> io::Result<String> {
+    if vcs_dev.extension().and_then(|value| value.to_str()) == Some("log") {
+        use std::io::{Read, Seek, SeekFrom};
+        let mut file = std::fs::File::open(vcs_dev)?;
+        if file.metadata()?.len() > 256 * 1024 { file.seek(SeekFrom::End(-262144))?; }
+        let mut bytes = Vec::new();
+        file.take(256 * 1024).read_to_end(&mut bytes)?;
+        let text = String::from_utf8_lossy(&bytes);
+        return Ok(text.lines().map(|line| line.split_whitespace().map(|word| {
+            if word.contains("http://") || word.contains("https://") { "<redacted-url>" } else { word }
+        }).collect::<Vec<_>>().join(" ")).collect::<Vec<_>>().join("\n"));
+    }
     if let Ok(raw) = std::fs::read(vcsa_path(vcs_dev)) {
 
         if raw.len() > 4 && raw[0] > 0 && raw[1] > 0 {

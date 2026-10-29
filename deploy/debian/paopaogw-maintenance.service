@@ -1,0 +1,15 @@
+[Unit]
+Description=PaoPaoGateway official mihomo online maintenance
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/lib/paopaogw/maintenance.py scheduled
+Environment=TZ=Asia/Shanghai
+UMask=0077
+ProtectHome=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/paopaogw /usr/local/lib/paopaogw/bin
+TimeoutStartSec=240

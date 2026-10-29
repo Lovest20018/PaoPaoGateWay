@@ -41,9 +41,10 @@ fn build(p: &PpgwIni) -> Config {
         udp_workers: workers,
         tcp_workers: workers,
         spoof_cache_cap: auto_spoof_cache_cap(),
-        tune_sysctl: true,
+        tune_sysctl: std::env::var("PPGW_DEBIAN").as_deref() != Ok("1"),
 
-        tune_nic: p.bool("tune_nic").unwrap_or(true),
+        tune_nic: std::env::var("PPGW_DEBIAN").as_deref() != Ok("1")
+            && p.bool("tune_nic").unwrap_or(true),
     };
 
     let socks5 = SocksCfg {
@@ -75,12 +76,17 @@ fn build(p: &PpgwIni) -> Config {
     });
 
     let web = WebCfg {
-        listen: "0.0.0.0:80".parse().unwrap(),
+        listen: std::env::var("PPGW_WEB_LISTEN")
+            .ok()
+            .and_then(|v| v.parse().ok())
+            .unwrap_or_else(|| "0.0.0.0:80".parse().unwrap()),
         password: web_password(p),
         admin_cidr: p.acl("admin_cidr"),
         clash_sock: "/tmp/clash.sock".into(),
         webroot: "/etc/config/clash/clash-dashboard".into(),
-        screen_dev: "/dev/vcs1".into(),
+        screen_dev: if std::env::var("PPGW_DEBIAN").as_deref() == Ok("1") {
+            "/var/lib/paopaogw/logs/controller.log".into()
+        } else { "/dev/vcs1".into() },
         reload_cmd: vec!["/usr/bin/ppg.sh".into(), "reload".into()],
     };
 
@@ -89,7 +95,6 @@ fn build(p: &PpgwIni) -> Config {
     };
 
     let inbound_proxy = InboundProxyCfg {
-
         enabled: true,
         listen_port: 1080,
         auth: p.userpass("openport_auth"),
@@ -112,7 +117,9 @@ fn build(p: &PpgwIni) -> Config {
         pplog_uuid: p.str("pplog_uuid").and_then(crate::config::parse_uuid),
     };
 
-    let cloudflared = CloudflaredCfg {
+    let cloudflared = if std::env::var("PPGW_DEBIAN").as_deref() == Ok("1") {
+        CloudflaredCfg::default()
+    } else { CloudflaredCfg {
         token: p.str("cloudflared_token").map(String::from),
 
         proxy: p
@@ -126,7 +133,7 @@ fn build(p: &PpgwIni) -> Config {
             .unwrap_or_default(),
         tproxy: Some("127.0.0.1:1082".parse().unwrap()),
         tproxy6: ipv6_enabled().then(|| "[::1]:1082".parse().unwrap()),
-    };
+    }};
 
     Config {
         log,
@@ -328,7 +335,6 @@ mod tests {
             ("cf_proxy=\"no\"\n", CfProxyMode::No),
             ("cf_proxy=\"yes\"\n", CfProxyMode::Yes),
             ("cf_proxy=\"both\"\n", CfProxyMode::Both),
-
             ("cf_proxy=\"sometimes\"\n", CfProxyMode::Yes),
             ("cf_proxy=\"\"\n", CfProxyMode::Yes),
         ];
@@ -355,7 +361,6 @@ mod tests {
                 CfProtocol::Fixed(Protocol::Http2),
             ),
             ("cf_protocol=\"auto\"\n", CfProtocol::Auto),
-
             ("cf_protocol=\"quik\"\n", CfProtocol::Auto),
             ("cf_protocol=\"\"\n", CfProtocol::Auto),
         ];
@@ -399,7 +404,6 @@ mod tests {
 
     #[test]
     fn missing_ppgw_uses_defaults() {
-
         let cfg = build(&PpgwIni::load("/nonexistent/ppgw.ini"));
         assert!(!cfg.inbound.udp);
         let s = cfg.stats.unwrap();
@@ -504,7 +508,6 @@ mod tests {
 
     #[test]
     fn reads_openport_keys() {
-
         let p = ppgw("openport=no\nopenport_auth=alice:secret\nudp_enable=yes\n");
         let cfg = build(&p);
         assert!(cfg.inbound_proxy.enabled);

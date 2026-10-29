@@ -25,6 +25,7 @@ mod screen_poll;
 pub mod server;
 pub mod sse;
 pub mod static_files;
+mod subscription;
 pub mod traffic;
 pub mod ws;
 

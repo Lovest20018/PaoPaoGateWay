@@ -11,8 +11,10 @@ pub mod config;
 pub mod dns_server;
 pub mod domain_rules;
 pub mod engine;
+pub mod evidence;
 pub mod geo_cron;
 pub mod inbound_proxy;
+pub mod integration;
 pub mod ip_rules;
 pub mod logging;
 pub mod nft;
@@ -232,7 +234,6 @@ fn raise_nofile() {
 }
 
 fn tune_sysctls() {
-
     const RAISE: &[(&str, i64, &str)] = &[
         ("net.core.rmem_max", 16 * 1024 * 1024, "max recv socket buf"),
         ("net.core.wmem_max", 16 * 1024 * 1024, "max send socket buf"),
@@ -414,7 +415,6 @@ async fn run(cfg: Config, source: ConfigSource) -> std::io::Result<()> {
     }
 
     let ovpn_sup = (cfg.outbound.mode == config::OutboundMode::Ovpn).then(|| {
-
         let tun_ready = shared.outbound.tun_ready();
         let sup = Arc::new(ovpn_ctl::OvpnSupervisor::new(tun_ready));
         ovpn_ctl::spawn_monitor(Arc::clone(&sup), shutdown_rx.clone());
@@ -468,7 +468,7 @@ async fn run(cfg: Config, source: ConfigSource) -> std::io::Result<()> {
         }
     }
 
-    let cf_sup = {
+    let cf_sup = (std::env::var("PPGW_DEBIAN").as_deref() != Ok("1")).then(|| {
         let sup = Arc::new(cf_ctl::CloudflaredSupervisor::new(
             source.clone(),
             cfg.outbound.mode,
@@ -476,7 +476,7 @@ async fn run(cfg: Config, source: ConfigSource) -> std::io::Result<()> {
         ));
         cf_ctl::spawn_monitor(Arc::clone(&sup), shutdown_rx.clone());
         sup
-    };
+    });
 
     {
         let shared = Arc::clone(&shared);
@@ -538,9 +538,7 @@ async fn run(cfg: Config, source: ConfigSource) -> std::io::Result<()> {
     }
 
     {
-
         let clash_supervisor = cfg.outbound.mode.via_clash().then(|| {
-
             let pool = shared.outbound.socks5_pool().cloned();
             Arc::new(clash_ctl::ClashSupervisor::with_pool(pool))
         });
@@ -662,11 +660,11 @@ async fn run(cfg: Config, source: ConfigSource) -> std::io::Result<()> {
 
             geo: web_geo.clone().map(|g| g as Arc<dyn sb_web::GeoControl>),
 
-            cloudflared: Some(Arc::new(runtime::WebCloudflared {
+            cloudflared: cf_sup.as_ref().map(|sup| Arc::new(runtime::WebCloudflared {
                 shared: Arc::clone(&shared),
-                sup: Arc::clone(&cf_sup),
+                sup: Arc::clone(sup),
             }) as Arc<dyn sb_web::CloudflaredSource>),
-            cloudflared_log: Some(cf_sup.logs()),
+            cloudflared_log: cf_sup.as_ref().map(|sup| sup.logs()),
         });
         let sd = shutdown_rx.clone();
         tokio::spawn(async move {
@@ -746,7 +744,9 @@ async fn run(cfg: Config, source: ConfigSource) -> std::io::Result<()> {
         let _ = tokio::task::spawn_blocking(move || sup.kill()).await;
     }
 
-    let _ = tokio::task::spawn_blocking(move || cf_sup.kill()).await;
+    if let Some(cf_sup) = cf_sup {
+        let _ = tokio::task::spawn_blocking(move || cf_sup.kill()).await;
+    }
     tokio::time::sleep(std::time::Duration::from_millis(200)).await;
     Ok(())
 }

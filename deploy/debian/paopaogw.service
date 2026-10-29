@@ -1,0 +1,39 @@
+[Unit]
+Description=PaoPaoGateway forwarding core
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+Group=paopaogw-api
+Environment=PPGW_DEBIAN=1
+Environment=TZ=Asia/Shanghai
+EnvironmentFile=/etc/paopaogw/service.env
+ExecStart=/usr/bin/python3 /usr/local/lib/paopaogw/launch.py
+ExecStopPost=/usr/local/lib/paopaogw/network.py stop
+Restart=on-failure
+RestartSec=5
+KillMode=control-group
+TimeoutStopSec=30
+LimitNOFILE=1048576
+UMask=0027
+RuntimeDirectory=paopaogw
+RuntimeDirectoryMode=0750
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/paopaogw /run/paopaogw
+# Legacy absolute paths exist only inside this service's mount namespace.
+BindReadOnlyPaths=/usr/local/lib/paopaogw/bin/sniffbox:/usr/bin/sniffbox
+BindReadOnlyPaths=/usr/local/lib/paopaogw/ppg.sh:/usr/bin/ppg.sh
+BindReadOnlyPaths=/usr/local/lib/paopaogw/nft.sh:/usr/bin/nft.sh
+BindReadOnlyPaths=-/usr/local/lib/paopaogw/bin/clash:/usr/bin/clash
+BindReadOnlyPaths=/etc/paopaogw/files:/www
+BindReadOnlyPaths=/etc/paopaogw/network:/etc/config/network
+BindPaths=/var/lib/paopaogw/clash:/etc/config/clash
+BindPaths=/var/lib/paopaogw/hosts:/etc/hosts
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,29 @@
+{
+  "api_url": "http://192.168.1.41:18788",
+  "instance_id": "771563c8-b58b-4960-863c-0149cdeb52b4",
+  "version": "0.1.0-hnm-v1.20261026.2",
+  "source_sha256": "c333782bff372e80eebac57cffe7da61e4494e11d758135100bf28cac56aafc2",
+  "package_sha256": "fdd5a405e14f89d453d7b040d51fbffd233671c7ad377722f8ba499c58be3123",
+  "openapi_sha256": "a8411994f268b290cb528cddbec63870d5e25956768946c69d3d715b877989f9",
+  "samples_sha256": "46fc91d3b8cedc7e3ba3b26ce12d9ec41788f3bbde6d3bb8b38a7b24a303c2b9",
+  "tests": {
+    "python_passed": 25,
+    "rust_passed": 887,
+    "rust_ignored": 5,
+    "fixtures": 20
+  },
+  "live_checks": {
+    "lookup_no_allocation": true,
+    "lookup_matches_actual_dns": true,
+    "probe_stages_and_exact_connection_join": true,
+    "completed_short_connection_retained": true,
+    "cursor_filter_binding": true,
+    "actual_outbound_connect_failure": true,
+    "core_restart_expires_cursor_and_history": true
+  },
+  "limitations": [
+    "Only free-mode IPv4 is tested here.",
+    "Decision is mode dispatch, not domain-rule simulation.",
+    "History covers TCP after sniffing; bounded retention is not a complete traffic ledger."
+  ]
+}
