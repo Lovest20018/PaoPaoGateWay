@@ -1,5 +1,7 @@
 # 验证记录
 
+- [2026-10-30：官方上游合并、Debian/HNM 兼容与构建验证](upstream-merge-2026-10-30.md)
+
 - [2026-10-27：完整 Clash 配置在原生 PPsub 中编辑和保存](ppsub-policy-edit-2026-10-27.md)
 
 - [2026-10-27：PPsub 当前配置完整读取及 Clash 格式写回保护](ppsub-current-config-2026-10-27.md)

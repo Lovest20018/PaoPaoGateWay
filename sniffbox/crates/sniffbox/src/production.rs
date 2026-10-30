@@ -21,6 +21,10 @@ pub fn build_production() -> Config {
 }
 
 fn build(p: &PpgwIni) -> Config {
+    build_for_environment(p, std::env::var("PPGW_DEBIAN").as_deref() == Ok("1"))
+}
+
+fn build_for_environment(p: &PpgwIni, debian: bool) -> Config {
     let workers = auto_workers();
     let (pool_min, pool_max) = auto_pool();
 
@@ -38,13 +42,21 @@ fn build(p: &PpgwIni) -> Config {
         splice_threshold: p.num("splice_threshold").unwrap_or(1024 * 1024),
         udp: p.bool("udp_enable").unwrap_or(false),
         udp_idle: Duration::from_secs(60),
+        udp_max_sessions: p
+            .num("udp_max_sessions")
+            .unwrap_or(crate::udp_budget::default_sessions())
+            .max(1),
+        udp_reserved_sessions: p
+            .num("udp_reserved_sessions")
+            .unwrap_or(crate::udp_budget::DEFAULT_RESERVED)
+            .max(1),
         udp_workers: workers,
         tcp_workers: workers,
         spoof_cache_cap: auto_spoof_cache_cap(),
-        tune_sysctl: std::env::var("PPGW_DEBIAN").as_deref() != Ok("1"),
+        tune_sysctl: !debian,
 
-        tune_nic: std::env::var("PPGW_DEBIAN").as_deref() != Ok("1")
-            && p.bool("tune_nic").unwrap_or(true),
+        tune_nic: !debian && p.bool("tune_nic").unwrap_or(true),
+        tune_rps: !debian && p.bool("tune_rps").unwrap_or(true),
     };
 
     let socks5 = SocksCfg {
@@ -84,7 +96,7 @@ fn build(p: &PpgwIni) -> Config {
         admin_cidr: p.acl("admin_cidr"),
         clash_sock: "/tmp/clash.sock".into(),
         webroot: "/etc/config/clash/clash-dashboard".into(),
-        screen_dev: if std::env::var("PPGW_DEBIAN").as_deref() == Ok("1") {
+        screen_dev: if debian {
             "/var/lib/paopaogw/logs/controller.log".into()
         } else { "/dev/vcs1".into() },
         reload_cmd: vec!["/usr/bin/ppg.sh".into(), "reload".into()],
@@ -117,7 +129,7 @@ fn build(p: &PpgwIni) -> Config {
         pplog_uuid: p.str("pplog_uuid").and_then(crate::config::parse_uuid),
     };
 
-    let cloudflared = if std::env::var("PPGW_DEBIAN").as_deref() == Ok("1") {
+    let cloudflared = if debian {
         CloudflaredCfg::default()
     } else { CloudflaredCfg {
         token: p.str("cloudflared_token").map(String::from),
@@ -303,6 +315,26 @@ mod tests {
     }
 
     #[test]
+    fn debian_disables_host_tuning_and_cloudflared_even_if_requested() {
+        let cfg = build_for_environment(&ppgw(
+            "tune_nic=yes\ntune_rps=yes\ncloudflared_token=fixture-token\n",
+        ), true);
+        assert!(!cfg.inbound.tune_sysctl);
+        assert!(!cfg.inbound.tune_nic);
+        assert!(!cfg.inbound.tune_rps);
+        assert!(cfg.cloudflared.token.is_none());
+        assert_eq!(cfg.web.screen_dev, std::path::PathBuf::from("/var/lib/paopaogw/logs/controller.log"));
+    }
+
+    #[test]
+    fn legacy_tuning_defaults_and_explicit_disable_remain_supported() {
+        let enabled = build_for_environment(&PpgwIni::default(), false);
+        assert!(enabled.inbound.tune_sysctl && enabled.inbound.tune_nic && enabled.inbound.tune_rps);
+        let disabled = build_for_environment(&ppgw("tune_nic=no\ntune_rps=no\n"), false);
+        assert!(!disabled.inbound.tune_nic && !disabled.inbound.tune_rps);
+    }
+
+    #[test]
     fn defaults_agree_with_inienv_key_table() {
         use sb_ppgw::inienv::default_of;
         let cfg = build(&PpgwIni::default());
@@ -380,6 +412,35 @@ mod tests {
 
         let stale = build(&ppgw("cf_protocol=\"auto\"\ncf_quality_interval=\"5\"\n"));
         assert_eq!(stale.cloudflared.protocol, CfProtocol::Auto);
+    }
+
+    #[test]
+    fn udp_global_limits_map_from_ppgw_and_require_restart() {
+        let cfg = build(&ppgw("udp_max_sessions=73\nudp_reserved_sessions=9\n"));
+        assert_eq!(cfg.inbound.udp_max_sessions, 73);
+        assert_eq!(cfg.inbound.udp_reserved_sessions, 9);
+        let zero = build(&ppgw("udp_max_sessions=0\nudp_reserved_sessions=0\n"));
+        assert_eq!(
+            (
+                zero.inbound.udp_max_sessions,
+                zero.inbound.udp_reserved_sessions
+            ),
+            (1, 1)
+        );
+        let fallback = build(&ppgw("udp_max_sessions=oops\nudp_reserved_sessions=-1\n"));
+        assert_eq!(
+            fallback.inbound.udp_max_sessions,
+            crate::udp_budget::default_sessions()
+        );
+        assert_eq!(
+            fallback.inbound.udp_reserved_sessions,
+            crate::udp_budget::DEFAULT_RESERVED
+        );
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let _guard = rt.enter();
+        let shared = crate::runtime::SharedState::new(&cfg);
+        shared.reload(&zero);
+        assert_eq!(shared.udp_budget.sessions.limits(), [73, 9]);
     }
 
     #[test]

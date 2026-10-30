@@ -33,9 +33,9 @@
 
 **Interfaces:** Retain `SharedState.configuration_gate`, `integration::Identity`, evidence records. Consume upstream `UdpBudget`, `dest_routable`, `resolve_all_v4`, and `ConnectionsSource -> Arc<String>`.
 
-- [ ] Save ignored source archive with checksums and commit existing customizations; retain recovery reference.
-- [ ] Fetch and merge official main without committing; resolve four overlapping files.
-- [ ] Add regression coverage for Debian tuning and destination handling; run Linux Rust tests with the locked dependencies.
+- [x] Save ignored source archive with checksums and commit existing customizations; retain recovery reference.
+- [x] Fetch and merge official main without committing; resolve four overlapping files.
+- [x] Add regression coverage for Debian tuning and destination handling; run Linux Rust tests with the locked dependencies.
 
 ### Task 2: Adapt dashboard integration
 
@@ -43,9 +43,9 @@
 
 **Interfaces:** Keep `prepare_dashboard(output)` and `window.ppgwPpsub` load/mount/import/export callbacks.
 
-- [ ] Reproduce packaging hook failure against the shipped upstream bundle in a test.
-- [ ] Update exact reviewed load, mount and identity anchors; keep fail-closed behavior for unknown bundles.
-- [ ] Run Python suite, API contract, JavaScript syntax and browser editor load/export/noop roundtrip on synthetic configuration.
+- [x] Reproduce packaging hook failure against the shipped upstream bundle in a test.
+- [x] Update exact reviewed load, mount and identity anchors; keep fail-closed behavior for unknown bundles.
+- [x] Run Python suite, API contract, JavaScript syntax and browser editor load/export/noop roundtrip on synthetic configuration.
 
 ### Task 3: Verify and finish merge
 
@@ -53,7 +53,7 @@
 
 **Interfaces:** Final Git merge commit has local snapshot and official upstream as parents; release staging uses the normal packager.
 
-- [ ] Build release in an isolated Linux container; run shell syntax and package manifest checks.
-- [ ] Request an independent review of integration changes and address important findings.
-- [ ] Confirm no conflict markers, clean diff, upstream ancestry and preserved customized files.
-- [ ] Commit the merge and report commit, checks and any remaining validation limitations.
+- [x] Build release in an isolated Linux container; run shell syntax and package manifest checks.
+- [x] Request an independent review of integration changes and address important findings.
+- [x] Confirm no conflict markers, clean diff, upstream ancestry and preserved customized files.
+- [x] Commit the merge and report commit, checks and any remaining validation limitations.

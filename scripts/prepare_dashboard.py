@@ -20,11 +20,11 @@ def prepare_dashboard(output):
         if bundle.count(anchor) != 1:
             raise ValueError('Cloudflared removal hook changed upstream')
         bundle = bundle.replace(anchor, '')
-    load_hook = 'async function B(){try{N(await Oi(`/data/ppsub.json?t=${Math.floor(Date.now()/1e3)}`))'
+    load_hook = 'async function B(){try{N(await Li(`/data/ppsub.json?t=${Math.floor(Date.now()/1e3)}`))'
     load_patch = ('async function B(){if(window.ppgwPpsub?.isAvailable())'
                   '{await window.ppgwPpsub.loadCurrent(N);return}'
-                  'try{N(await Oi(`/data/ppsub.json?t=${Math.floor(Date.now()/1e3)}`))')
-    mount_hook = ('qn("click",kt,()=>gn(r).push({priority:gn(r).length+1,remark:"",name:"",type:"manual",'
+                  'try{N(await Li(`/data/ppsub.json?t=${Math.floor(Date.now()/1e3)}`))')
+    mount_hook = ('Cn("click",kt,()=>gn(r).push({priority:gn(r).length+1,remark:"",name:"",type:"manual",'
                   'url:"",rule_set_url:"",content:"",isforced:!1,behavior:"domain",interval:86400,'
                   'format:"auto",use_proxy:!1,proxy_group:""})),zn(e,oe),Vt()}')
     mount_patch = mount_hook.replace('zn(e,oe),Vt()}',
